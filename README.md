@@ -1,10 +1,9 @@
 # Graphite
 
-Flutter widget to draw direct graphs, trees, flowcharts in rectanglar manner.
+:arrow_right: :black_square_button: Flutter widget to draw direct graphs, trees, flowcharts in rectanglar manner.
 
 
-![vertical](./image/vertical.gif)
-![horizontal](./image/horizontal.gif)
+![vertical](./image/vertical.gif)![horizontal](./image/horizontal.gif)
 
 
 ## Example of usage:
@@ -56,3 +55,16 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 ```
+
+## Features
+* Nodes and edge gesture events.
+* Ability provide graph building direction (horizontal or vertical).
+* Ability provide scrolling direction (horizontal, vertical, both or none).
+* Ability to provide custom builder to node widget.
+* Ability to provide custom paint builder to graph edges.
+* Ability to customize arrows.
+
+
+## License
+
+MIT © [lempiy](https://github.com/lempiy)
