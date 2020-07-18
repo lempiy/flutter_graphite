@@ -218,7 +218,7 @@ class LinesPainter extends CustomPainter {
             to = directions[1];
             points.add(getPointWithResolver(to, cellWidth, cellPadding,
                 contactEdgesDistance, incomeNode, incomeMargin, orientation));
-            acc.add(Edge(points, node, incomeNode));
+            acc.add(Edge(points, incomeNode, node));
             return acc;
           })
         : [];
@@ -319,7 +319,7 @@ class LinesPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(LinesPainter oldDelegate) {
-    return false;
+    return true;
   }
 }
 

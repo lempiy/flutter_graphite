@@ -3,7 +3,7 @@
 :arrow_right: :black_square_button: Flutter widget to draw direct graphs, trees, flowcharts in rectanglar manner.
 
 
-![vertical](./image/vertical.gif)![horizontal](./image/horizontal.gif)
+![vertical](./image/vertical.gif)  ![horizontal](./image/horizontal.gif)  ![custom](./image/custom.gif)
 
 
 ## Example of usage:
