@@ -41,13 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
         cellWidth: 136.0,
         cellPadding: 24.0,
         contactEdgesDistance: 10.0,
-        onNodeTapDown: (details, node) {
-          print(node.id);
-        },
-        onEdgeTapDown: (details, edge) {
-          print("${edge.from.id}->${edge.to.id}");
-        },
-        orientation: MatrixOrientation.Vertical,
+        orientation: MatrixOrientation.Horizontal,
       ),
     );
   }

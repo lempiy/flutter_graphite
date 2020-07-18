@@ -1,6 +1,11 @@
 # Graphite
 
-Flutter widget to draw direct graphs, trees, flowcharts in rectanglar.
+Flutter widget to draw direct graphs, trees, flowcharts in rectanglar manner.
+
+
+![vertical](./image/vertical.gif)
+![horizontal](./image/horizontal.gif)
+
 
 ## Example of usage:
 ```dart
