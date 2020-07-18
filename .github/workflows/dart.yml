@@ -22,8 +22,3 @@ jobs:
       uses: steebchen/flutter@v1.1.0
       with:
         args: test
-
-    - name: build apk
-      uses: steebchen/flutter@v1.1.0
-      with:
-        args: build apk --release
