@@ -1,7 +1,6 @@
 name: graphite
-description: Flutter widget to draw direct graphs, trees, flowcharts.
+description: Flutter widget to easily draw direct graphs, trees, flowcharts. Includes gesture API to create graphs interactions.
 version: 0.1.0
-author: Anton Lempiy
 homepage: https://github.com/lempiy/flutter_graphite
 
 environment:
@@ -10,9 +9,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  touchable: 0.1.6
-  rxdart: 0.23.1
-  arrow_path: 1.0.0
+  touchable: ^0.1.6
+  arrow_path: ^1.0.0
+  meta: ^1.1.8
 
 dev_dependencies:
   flutter_test:

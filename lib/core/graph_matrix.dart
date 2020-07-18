@@ -42,7 +42,6 @@ class GraphMatrix extends GraphBasic {
     if (incomes.length == 0) {
       return 0;
     }
-    int y = 0;
     return incomes.map((String id) {
       List<int> coords = mtx.find((NodeOutput itm) {
         return itm.id == id;
@@ -198,7 +197,7 @@ class GraphMatrix extends GraphBasic {
     ]);
     outcomes.forEach((String outcomeId) {
       state.y++;
-      String id = "${item.id}-${outcomeId}";
+      String id = "${item.id}-$outcomeId";
       insertOrSkipNodeOnMatrix(
         NodeOutput(
           id: id,

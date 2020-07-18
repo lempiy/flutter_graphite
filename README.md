@@ -1,5 +1,13 @@
 # Graphite
 
+
+[![](https://img.shields.io/pub/v/graphite)](https://pub.dev/packages/graphite)
+[![](https://img.shields.io/badge/package-flutter-blue)](https://github.com/lempiy/flutter_graphite)
+[![](https://img.shields.io/github/license/lempiy/flutter_graphite)](https://github.com/lempiy/flutter_graphite)
+[![](https://img.shields.io/github/stars/lempiy/flutter_graphite)](https://github.com/lempiy/flutter_graphite)
+[![](https://img.shields.io/github/languages/code-size/lempiy/flutter_graphite)](https://github.com/lempiy/flutter_graphite)
+
+
 :arrow_right: :black_square_button: Flutter widget to draw direct graphs, trees, flowcharts in rectanglar manner.
 
 

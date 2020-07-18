@@ -4,15 +4,13 @@ import 'package:graphite/core/typings.dart';
 import 'package:graphite/graphite.dart';
 
 void main() => runApp(MyApp());
-const presetBasic =
-    '[{"id":"A","next":["B"]},{"id":"B","next":["C","D","E"]},'
+const presetBasic = '[{"id":"A","next":["B"]},{"id":"B","next":["C","D","E"]},'
     '{"id":"C","next":["F"]},{"id":"D","next":["J"]},{"id":"E","next":["J"]},'
     '{"id":"J","next":["I"]},{"id":"I","next":["H"]},{"id":"F","next":["K"]},'
     '{"id":"K","next":["L"]},{"id":"H","next":["L"]},{"id":"L","next":["P"]},'
     '{"id":"P","next":["M","N"]},{"id":"M","next":[]},{"id":"N","next":[]}]';
 
-const presetComplex =
-    '[{"id":"A","next":["B"]},{"id":"U","next":["G"]},'
+const presetComplex = '[{"id":"A","next":["B"]},{"id":"U","next":["G"]},'
     '{"id":"B","next":["C","D","E","F","M"]},{"id":"C","next":["G"]},'
     '{"id":"D","next":["H"]},{"id":"E","next":["H"]},{"id":"F","next":["N","O"]},'
     '{"id":"N","next":["I"]},{"id":"O","next":["P"]},{"id":"P","next":["I"]},'
@@ -51,13 +49,16 @@ class _BasicPageState extends State<BasicPage> {
         context,
         PageRouteBuilder(
             transitionDuration: Duration(seconds: 1),
-            pageBuilder: (_, __, ___) => index == 0 ? BasicPage() : CustomPage()));
+            pageBuilder: (_, __, ___) =>
+                index == 0 ? BasicPage() : CustomPage()));
   }
+
   @override
   Widget build(BuildContext context) {
     var list = nodeInputFromJson(presetBasic);
     return Scaffold(
-      appBar: AppBar(leading: Icon(Icons.view_module), title: Text('Basic Example')),
+      appBar: AppBar(
+          leading: Icon(Icons.view_module), title: Text('Basic Example')),
       body: DirectGraph(
         list: list,
         cellWidth: 136.0,
@@ -66,7 +67,7 @@ class _BasicPageState extends State<BasicPage> {
         orientation: MatrixOrientation.Vertical,
       ),
       bottomNavigationBar: BottomNavigationBar(
-          items: const <BottomNavigationBarItem>[
+        items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.view_module),
             title: Text('Basic'),
@@ -98,10 +99,11 @@ class _CustomPageState extends State<CustomPage> {
   Map<String, bool> selected = {};
   void _onItemSelected(String nodeId) {
     setState(() {
-      selected[nodeId] = selected[nodeId] == null || !selected[nodeId] ?
-      true : false;
+      selected[nodeId] =
+          selected[nodeId] == null || !selected[nodeId] ? true : false;
     });
   }
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -111,13 +113,16 @@ class _CustomPageState extends State<CustomPage> {
         context,
         PageRouteBuilder(
             transitionDuration: Duration(seconds: 1),
-            pageBuilder: (_, __, ___) => index == 0 ? BasicPage() : CustomPage()));
+            pageBuilder: (_, __, ___) =>
+                index == 0 ? BasicPage() : CustomPage()));
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[200],
-      appBar: AppBar(leading: Icon(Icons.view_comfy), title: Text('Custom Example')),
+      appBar: AppBar(
+          leading: Icon(Icons.view_comfy), title: Text('Custom Example')),
       body: DirectGraph(
         list: list,
         cellWidth: 104.0,
@@ -128,15 +133,13 @@ class _CustomPageState extends State<CustomPage> {
           return Card(
             child: Center(
               child: Text(
-                  node.id,
-                style: selected[node.id] ?? false ? TextStyle(
-                    fontSize: 20.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.red
-                ) :
-                TextStyle(
-                  fontSize: 20.0
-                ),
+                node.id,
+                style: selected[node.id] ?? false
+                    ? TextStyle(
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.red)
+                    : TextStyle(fontSize: 20.0),
               ),
             ),
           );
@@ -148,7 +151,8 @@ class _CustomPageState extends State<CustomPage> {
             ..strokeCap = StrokeCap.round
             ..strokeJoin = StrokeJoin.round
             ..strokeWidth = 2;
-          if ((selected[edge.from.id] ?? false) && (selected[edge.to.id] ?? false)) {
+          if ((selected[edge.from.id] ?? false) &&
+              (selected[edge.to.id] ?? false)) {
             p.color = Colors.red;
           }
           return p;
@@ -176,7 +180,7 @@ class _CustomPageState extends State<CustomPage> {
   }
 }
 
-final Map<String, WidgetBuilder> routes = <String, WidgetBuilder> {
+final Map<String, WidgetBuilder> routes = <String, WidgetBuilder>{
   '/home': (BuildContext context) => BasicPage(),
   '/complex': (BuildContext context) => CustomPage(),
 };
