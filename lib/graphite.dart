@@ -10,6 +10,10 @@ import 'package:graphite/graphite_cell.dart';
 import 'package:graphite/graphite_edges_painter.dart';
 import 'package:graphite/graphite_root.dart';
 
+export 'package:graphite/graphite_edges_painter.dart';
+export 'package:graphite/graphite_cell.dart';
+export 'package:graphite/core/typings.dart';
+
 enum ScrollDirections { none, vertical, horizontal, both }
 
 class DirectGraph extends StatefulWidget {

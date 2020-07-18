@@ -1,8 +1,4 @@
-import 'dart:async';
-import 'dart:ui';
-
 import 'package:arrow_path/arrow_path.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:graphite/core/matrix.dart';
 import 'package:graphite/core/typings.dart';
