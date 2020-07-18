@@ -7,3 +7,7 @@
 * Ability to provide custom builder to node widget.
 * Ability to provide custom paint builder to graph edges.
 * Ability to customize arrows.
+
+## [0.1.1] - July 18, 2020.
+
+* Code style fixes.
