@@ -1,0 +1,229 @@
+library graphite;
+
+import 'dart:math' as math;
+
+import 'package:flutter/widgets.dart';
+import 'package:graphite/core/graph.dart';
+import 'package:graphite/core/matrix.dart';
+import 'package:graphite/core/typings.dart';
+import 'package:graphite/graphite_cell.dart';
+import 'package:graphite/graphite_edges_painter.dart';
+import 'package:graphite/graphite_root.dart';
+
+enum ScrollDirections { none, vertical, horizontal, both }
+
+class DirectGraph extends StatefulWidget {
+  const DirectGraph(
+      {@required this.list,
+      @required this.cellWidth,
+      @required this.cellPadding,
+      Key key,
+      this.scrollDirection = ScrollDirections.both,
+      this.onEdgeTapDown,
+      this.edgePaintStyleForTouch,
+      this.onEdgeTapUp,
+      this.onEdgeLongPressStart,
+      this.onEdgeLongPressEnd,
+      this.onEdgeLongPressMoveUpdate,
+      this.onEdgeForcePressStart,
+      this.onEdgeForcePressEnd,
+      this.onEdgeForcePressPeak,
+      this.onEdgeForcePressUpdate,
+      this.onEdgePanStart,
+      this.onEdgePanUpdate,
+      this.onEdgePanDown,
+      this.onEdgeSecondaryTapDown,
+      this.onEdgeSecondaryTapUp,
+      this.paintBuilder,
+      this.onNodeTapDown,
+      this.onNodeTapUp,
+      this.onNodeLongPressStart,
+      this.onNodeLongPressEnd,
+      this.onNodeLongPressMoveUpdate,
+      this.onNodeForcePressStart,
+      this.onNodeForcePressEnd,
+      this.onNodeForcePressPeak,
+      this.onNodeForcePressUpdate,
+      this.onNodePanStart,
+      this.onNodePanUpdate,
+      this.onNodePanDown,
+      this.onNodeSecondaryTapDown,
+      this.onNodeSecondaryTapUp,
+      this.builder,
+      this.contactEdgesDistance = 5.0,
+      this.orientation = MatrixOrientation.Horizontal,
+      this.tipAngle = math.pi * 0.1,
+      this.tipLength = 10.0})
+      : super(key: key);
+
+  final double cellWidth;
+  final double cellPadding;
+  final List<NodeInput> list;
+  final ScrollDirections scrollDirection;
+  final double contactEdgesDistance;
+  final MatrixOrientation orientation;
+  final double tipLength;
+  final double tipAngle;
+
+  // Node
+  final NodeCellBuilder builder;
+
+  final GestureNodeTapDownCallback onNodeTapDown;
+
+  final GestureNodeTapUpCallback onNodeTapUp;
+  final GestureNodeLongPressStartCallback onNodeLongPressStart;
+
+  final GestureNodeLongPressEndCallback onNodeLongPressEnd;
+  final GestureNodeLongPressMoveUpdateCallback onNodeLongPressMoveUpdate;
+
+  final GestureNodeForcePressStartCallback onNodeForcePressStart;
+  final GestureNodeForcePressEndCallback onNodeForcePressEnd;
+
+  final GestureNodeForcePressPeakCallback onNodeForcePressPeak;
+  final GestureNodeForcePressUpdateCallback onNodeForcePressUpdate;
+
+  final GestureNodeDragStartCallback onNodePanStart;
+  final GestureNodeDragUpdateCallback onNodePanUpdate;
+
+  final GestureNodeDragDownCallback onNodePanDown;
+  final GestureNodeTapDownCallback onNodeSecondaryTapDown;
+
+  final GestureNodeTapUpCallback onNodeSecondaryTapUp;
+
+  // Edge
+  final EdgePaintBuilder paintBuilder;
+
+  final GestureEdgeTapDownCallback onEdgeTapDown;
+  final PaintingStyle edgePaintStyleForTouch;
+
+  final GestureEdgeTapUpCallback onEdgeTapUp;
+  final GestureEdgeLongPressStartCallback onEdgeLongPressStart;
+
+  final GestureEdgeLongPressEndCallback onEdgeLongPressEnd;
+  final GestureEdgeLongPressMoveUpdateCallback onEdgeLongPressMoveUpdate;
+
+  final GestureEdgeForcePressStartCallback onEdgeForcePressStart;
+  final GestureEdgeForcePressEndCallback onEdgeForcePressEnd;
+
+  final GestureEdgeForcePressPeakCallback onEdgeForcePressPeak;
+  final GestureEdgeForcePressUpdateCallback onEdgeForcePressUpdate;
+
+  final GestureEdgeDragStartCallback onEdgePanStart;
+  final GestureEdgeDragUpdateCallback onEdgePanUpdate;
+
+  final GestureEdgeDragDownCallback onEdgePanDown;
+  final GestureEdgeTapDownCallback onEdgeSecondaryTapDown;
+
+  final GestureEdgeTapUpCallback onEdgeSecondaryTapUp;
+  @override
+  _DirectGraphState createState() => _DirectGraphState();
+}
+
+class _DirectGraphState extends State<DirectGraph> {
+  Graph toGraph(List<NodeInput> list) {
+    return Graph(list: list);
+  }
+
+  List<NodeOutput> getListFromTMatrix(Matrix mtx) {
+    return mtx.s.expand((v) => v).toList();
+  }
+
+  Widget getRoot(BuildContext context, Matrix mtx) {
+    return GraphiteRoot(
+        mtx: mtx,
+        cellWidth: widget.cellWidth,
+        cellPadding: widget.cellPadding,
+        contactEdgesDistance: widget.contactEdgesDistance,
+        orientation: widget.orientation,
+        builder: widget.builder,
+        tipLength: widget.tipLength,
+        tipAngle: widget.tipAngle,
+        onNodeTapDown: widget.onNodeTapDown,
+        onNodeTapUp: widget.onNodeTapUp,
+        onNodeLongPressStart: widget.onNodeLongPressStart,
+        onNodeLongPressEnd: widget.onNodeLongPressEnd,
+        onNodeLongPressMoveUpdate: widget.onNodeLongPressMoveUpdate,
+        onNodeForcePressStart: widget.onNodeForcePressStart,
+        onNodeForcePressEnd: widget.onNodeForcePressEnd,
+        onNodeForcePressPeak: widget.onNodeForcePressPeak,
+        onNodeForcePressUpdate: widget.onNodeForcePressUpdate,
+        onNodePanStart: widget.onNodePanStart,
+        onNodePanUpdate: widget.onNodePanUpdate,
+        onNodePanDown: widget.onNodePanDown,
+        onNodeSecondaryTapDown: widget.onNodeSecondaryTapDown,
+        onNodeSecondaryTapUp: widget.onNodeSecondaryTapUp,
+        paintBuilder: widget.paintBuilder,
+        onEdgeTapDown: widget.onEdgeTapDown,
+        edgePaintStyleForTouch: widget.edgePaintStyleForTouch,
+        onEdgeTapUp: widget.onEdgeTapUp,
+        onEdgeLongPressStart: widget.onEdgeLongPressStart,
+        onEdgeLongPressEnd: widget.onEdgeLongPressEnd,
+        onEdgeLongPressMoveUpdate: widget.onEdgeLongPressMoveUpdate,
+        onEdgeForcePressStart: widget.onEdgeForcePressStart,
+        onEdgeForcePressEnd: widget.onEdgeForcePressEnd,
+        onEdgeForcePressPeak: widget.onEdgeForcePressPeak,
+        onEdgeForcePressUpdate: widget.onEdgeForcePressUpdate,
+        onEdgePanStart: widget.onEdgePanStart,
+        onEdgePanUpdate: widget.onEdgePanUpdate,
+        onEdgePanDown: widget.onEdgePanDown,
+        onEdgeSecondaryTapDown: widget.onEdgeSecondaryTapDown,
+        onEdgeSecondaryTapUp: widget.onEdgeSecondaryTapUp);
+  }
+
+  Widget scrollBoth(BuildContext context, Matrix mtx) {
+    return NotificationListener<OverscrollIndicatorNotification>(
+      onNotification: (OverscrollIndicatorNotification overScroll) {
+        overScroll.disallowGlow();
+        return false;
+      },
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Container(
+          child: SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            child: getRoot(context, mtx),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget scrollOne(BuildContext context, Matrix mtx, Axis axis) {
+    return NotificationListener<OverscrollIndicatorNotification>(
+      onNotification: (OverscrollIndicatorNotification overScroll) {
+        overScroll.disallowGlow();
+        return false;
+      },
+      child: SingleChildScrollView(
+        scrollDirection: axis,
+        child: getRoot(context, mtx),
+      ),
+    );
+  }
+
+  Widget scrollNone(BuildContext context, Matrix mtx) {
+    return Container(
+      child: getRoot(context, mtx),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var graph = this.toGraph(widget.list);
+    var mtx = graph.traverse();
+    if (widget.orientation == MatrixOrientation.Vertical) {
+      mtx = mtx.rotate();
+    }
+    switch (widget.scrollDirection) {
+      case ScrollDirections.none:
+        return SafeArea(child: scrollNone(context, mtx));
+      case ScrollDirections.vertical:
+        return SafeArea(child: scrollOne(context, mtx, Axis.vertical));
+      case ScrollDirections.horizontal:
+        return SafeArea(child: scrollOne(context, mtx, Axis.horizontal));
+      case ScrollDirections.both:
+        return SafeArea(child: scrollBoth(context, mtx));
+    }
+    return null;
+  }
+}
