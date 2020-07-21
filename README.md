@@ -1,6 +1,6 @@
 # Graphite
 
-[![Actions Status](https://github.com/lempiy/flutter_graphite/workflows/Dart+CI/badge.svg)](https://github.com/lempiy/flutter_graphite/actions)
+[![Actions Status](https://github.com/lempiy/flutter_graphite/workflows/Dart CI/badge.svg)](https://github.com/lempiy/flutter_graphite/actions)
 [![](https://img.shields.io/pub/v/graphite)](https://pub.dev/packages/graphite)
 [![](https://img.shields.io/badge/package-flutter-blue)](https://github.com/lempiy/flutter_graphite)
 [![](https://img.shields.io/github/license/lempiy/flutter_graphite)](https://github.com/lempiy/flutter_graphite)
