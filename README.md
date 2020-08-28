@@ -67,7 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
 ## Features
 * Nodes and edge gesture events.
 * Ability provide graph building direction (horizontal or vertical).
-* Ability provide scrolling direction (horizontal, vertical, both or none).
+* Ability to scale & pan graph through Interactive Widget.
 * Ability to provide custom builder to node widget.
 * Ability to provide custom paint builder to graph edges.
 * Ability to customize arrows.

@@ -14,7 +14,6 @@ export 'package:graphite/graphite_edges_painter.dart';
 export 'package:graphite/graphite_cell.dart';
 export 'package:graphite/core/typings.dart';
 
-enum ScrollDirections { none, vertical, horizontal, both }
 
 class DirectGraph extends StatefulWidget {
   const DirectGraph(
@@ -22,7 +21,6 @@ class DirectGraph extends StatefulWidget {
       @required this.cellWidth,
       @required this.cellPadding,
       Key key,
-      this.scrollDirection = ScrollDirections.both,
       this.onEdgeTapDown,
       this.edgePaintStyleForTouch,
       this.onEdgeTapUp,
@@ -57,17 +55,21 @@ class DirectGraph extends StatefulWidget {
       this.contactEdgesDistance = 5.0,
       this.orientation = MatrixOrientation.Horizontal,
       this.tipAngle = math.pi * 0.1,
-      this.tipLength = 10.0})
+      this.tipLength = 10.0,
+      this.maxScale = 3.5,
+      this.minScale = 0.25,
+      this.pathBuilder})
       : super(key: key);
 
   final double cellWidth;
   final double cellPadding;
   final List<NodeInput> list;
-  final ScrollDirections scrollDirection;
   final double contactEdgesDistance;
   final MatrixOrientation orientation;
   final double tipLength;
   final double tipAngle;
+  final double maxScale;
+  final double minScale;
 
   // Node
   final NodeCellBuilder builder;
@@ -96,6 +98,7 @@ class DirectGraph extends StatefulWidget {
 
   // Edge
   final EdgePaintBuilder paintBuilder;
+  final EdgePathBuilder pathBuilder;
 
   final GestureEdgeTapDownCallback onEdgeTapDown;
   final PaintingStyle edgePaintStyleForTouch;
@@ -124,6 +127,7 @@ class DirectGraph extends StatefulWidget {
 }
 
 class _DirectGraphState extends State<DirectGraph> {
+
   Graph toGraph(List<NodeInput> list) {
     return Graph(list: list);
   }
@@ -171,43 +175,10 @@ class _DirectGraphState extends State<DirectGraph> {
         onEdgePanUpdate: widget.onEdgePanUpdate,
         onEdgePanDown: widget.onEdgePanDown,
         onEdgeSecondaryTapDown: widget.onEdgeSecondaryTapDown,
-        onEdgeSecondaryTapUp: widget.onEdgeSecondaryTapUp);
-  }
-
-  Widget scrollBoth(BuildContext context, Matrix mtx) {
-    return NotificationListener<OverscrollIndicatorNotification>(
-      onNotification: (OverscrollIndicatorNotification overScroll) {
-        overScroll.disallowGlow();
-        return false;
-      },
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Container(
-          child: SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            child: getRoot(context, mtx),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget scrollOne(BuildContext context, Matrix mtx, Axis axis) {
-    return NotificationListener<OverscrollIndicatorNotification>(
-      onNotification: (OverscrollIndicatorNotification overScroll) {
-        overScroll.disallowGlow();
-        return false;
-      },
-      child: SingleChildScrollView(
-        scrollDirection: axis,
-        child: getRoot(context, mtx),
-      ),
-    );
-  }
-
-  Widget scrollNone(BuildContext context, Matrix mtx) {
-    return Container(
-      child: getRoot(context, mtx),
+        onEdgeSecondaryTapUp: widget.onEdgeSecondaryTapUp,
+        minScale: widget.minScale,
+        maxScale: widget.maxScale,
+        pathBuilder: widget.pathBuilder,
     );
   }
 
@@ -218,16 +189,6 @@ class _DirectGraphState extends State<DirectGraph> {
     if (widget.orientation == MatrixOrientation.Vertical) {
       mtx = mtx.rotate();
     }
-    switch (widget.scrollDirection) {
-      case ScrollDirections.none:
-        return SafeArea(child: scrollNone(context, mtx));
-      case ScrollDirections.vertical:
-        return SafeArea(child: scrollOne(context, mtx, Axis.vertical));
-      case ScrollDirections.horizontal:
-        return SafeArea(child: scrollOne(context, mtx, Axis.horizontal));
-      case ScrollDirections.both:
-        return SafeArea(child: scrollBoth(context, mtx));
-    }
-    return null;
+    return getRoot(context, mtx);
   }
 }

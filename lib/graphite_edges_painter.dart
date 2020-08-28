@@ -137,6 +137,8 @@ typedef GestureEdgeDragUpdateCallback = void Function(
 typedef GestureEdgeDragDownCallback = void Function(
     DragDownDetails details, Edge edge);
 
+typedef EdgePathBuilder = Path Function (List<List<double>> points);
+
 class LinesPainter extends CustomPainter {
   final Map<String, MatrixNode> matrixMap;
   final double cellWidth;
@@ -144,6 +146,7 @@ class LinesPainter extends CustomPainter {
   final double contactEdgesDistance;
   final BuildContext context;
   final EdgePaintBuilder paintBuilder;
+  final EdgePathBuilder pathBuilder;
   final MatrixOrientation orientation;
   final double tipLength;
   final double tipAngle;
@@ -170,6 +173,13 @@ class LinesPainter extends CustomPainter {
   final GestureEdgeTapDownCallback onEdgeSecondaryTapDown;
 
   final GestureEdgeTapUpCallback onEdgeSecondaryTapUp;
+
+  Path _defaultEdgePathBuilder(List<List<double>> points) {
+    var path = Path();
+    path.moveTo(points[0][0], points[0][1]);
+    points.sublist(1).forEach((p) => path.lineTo(p[0], p[1]));
+    return ArrowPath.make(path: path, tipLength: tipLength, tipAngle: tipAngle);
+  }
 
   List<Edge> collectEdges(MatrixNode node, Map<String, MatrixNode> edges) {
     return node.renderIncomes != null
@@ -249,6 +259,7 @@ class LinesPainter extends CustomPainter {
     this.paintBuilder,
     this.tipLength,
     this.tipAngle,
+    this.pathBuilder,
   });
 
   @override
@@ -261,13 +272,9 @@ class LinesPainter extends CustomPainter {
     });
     _state.forEach((e) {
       var points = e.points.reversed.toList();
-      var path = Path();
-      path.moveTo(points[0][0], points[0][1]);
-      points.sublist(1).forEach((p) => path.lineTo(p[0], p[1]));
+      var path = pathBuilder == null ? _defaultEdgePathBuilder(points) : pathBuilder(points);
       final paint =
-          paintBuilder == null ? _defaultPaintBuilder(e) : paintBuilder(e);
-      path =
-          ArrowPath.make(path: path, tipLength: tipLength, tipAngle: tipAngle);
+        paintBuilder == null ? _defaultPaintBuilder(e) : paintBuilder(e);
       canvas.drawPath(
         path,
         paint,

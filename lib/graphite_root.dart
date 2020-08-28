@@ -13,6 +13,9 @@ class GraphiteRoot extends StatefulWidget {
   final MatrixOrientation orientation;
   final double tipLength;
   final double tipAngle;
+  final double maxScale;
+  final double minScale;
+
 
   // Node
   final NodeCellBuilder builder;
@@ -41,6 +44,7 @@ class GraphiteRoot extends StatefulWidget {
 
   // Edge
   final EdgePaintBuilder paintBuilder;
+  final EdgePathBuilder pathBuilder;
 
   final GestureEdgeTapDownCallback onEdgeTapDown;
   final PaintingStyle edgePaintStyleForTouch;
@@ -104,6 +108,9 @@ class GraphiteRoot extends StatefulWidget {
     this.builder,
     this.tipLength,
     this.tipAngle,
+    this.maxScale,
+    this.minScale,
+    this.pathBuilder,
   });
   @override
   _GraphiteRootState createState() => _GraphiteRootState();
@@ -155,6 +162,9 @@ class _GraphiteRootState extends State<GraphiteRoot> {
       onEdgeSecondaryTapUp: widget.onEdgeSecondaryTapUp,
       tipAngle: widget.tipAngle,
       tipLength: widget.tipLength,
+      maxScale: widget.maxScale,
+      minScale: widget.minScale,
+      pathBuilder: widget.pathBuilder,
     );
   }
 }

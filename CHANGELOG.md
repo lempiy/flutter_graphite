@@ -11,3 +11,9 @@
 ## [0.1.1] - July 18, 2020.
 
 * Code style fixes.
+
+## [0.2.0] - August 29, 2020.
+
+* Ability to scale & pan graph through Interactive Widget.
+* Removed ScrollDirection enum (replaced ScrollViews with Interactive Widget).
+* Added ability to customize path shape with pathBuilder param.

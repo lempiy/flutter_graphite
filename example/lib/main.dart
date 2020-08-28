@@ -1,3 +1,6 @@
+import 'dart:ui';
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:graphite/core/matrix.dart';
 import 'package:graphite/core/typings.dart';
@@ -129,6 +132,7 @@ class _CustomPageState extends State<CustomPage> {
         cellPadding: 14.0,
         contactEdgesDistance: 5.0,
         orientation: MatrixOrientation.Vertical,
+        pathBuilder: customEdgePathBuilder,
         builder: (ctx, node) {
           return Card(
             child: Center(
@@ -184,3 +188,12 @@ final Map<String, WidgetBuilder> routes = <String, WidgetBuilder>{
   '/home': (BuildContext context) => BasicPage(),
   '/complex': (BuildContext context) => CustomPage(),
 };
+
+Path customEdgePathBuilder(List<List<double>> points) {
+  var path = Path();
+  path.moveTo(points[0][0], points[0][1]);
+  points.sublist(1).forEach((p) {
+    path.lineTo(p[0], p[1]);
+  });
+  return path;
+}

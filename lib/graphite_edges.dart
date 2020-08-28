@@ -15,9 +15,12 @@ class GraphiteEdges extends StatefulWidget {
   final MatrixOrientation orientation;
   final double tipLength;
   final double tipAngle;
+  final double maxScale;
+  final double minScale;
 
   // Edge
   final EdgePaintBuilder paintBuilder;
+  final EdgePathBuilder pathBuilder;
 
   final GestureEdgeTapDownCallback onEdgeTapDown;
   final PaintingStyle edgePaintStyleForTouch;
@@ -68,6 +71,9 @@ class GraphiteEdges extends StatefulWidget {
     this.orientation,
     this.tipLength,
     this.tipAngle,
+    this.maxScale,
+    this.minScale,
+    this.pathBuilder,
   }) : super(key: key);
 
   @override
@@ -89,47 +95,52 @@ class _GraphiteEdgesState extends State<GraphiteEdges> {
     return TouchDetectionController(touchController, addStreamListener,
         child: GestureDetector(
           behavior: HitTestBehavior.translucent,
-          child: Stack(
-            children: <Widget>[
-              Container(
-                //padding: EdgeInsets.all(30.0),
-                width: (widget.cellWidth * widget.matrix.width()).toDouble(),
-                height: (widget.cellWidth * widget.matrix.height()).toDouble(),
-                child: Builder(builder: (ctx) {
-                  return CustomPaint(
-                    size: Size.infinite,
-                    painter: LinesPainter(
-                      ctx,
-                      widget.matrix.normalize(),
-                      widget.cellWidth,
-                      widget.contactEdgesDistance,
-                      widget.orientation,
-                      tipLength: widget.tipLength,
-                      tipAngle: widget.tipAngle,
-                      cellPadding: widget.cellPadding,
-                      paintBuilder: widget.paintBuilder,
-                      onEdgeTapDown: widget.onEdgeTapDown,
-                      edgePaintStyleForTouch: widget.edgePaintStyleForTouch,
-                      onEdgeTapUp: widget.onEdgeTapUp,
-                      onEdgeLongPressStart: widget.onEdgeLongPressStart,
-                      onEdgeLongPressEnd: widget.onEdgeLongPressEnd,
-                      onEdgeLongPressMoveUpdate:
-                          widget.onEdgeLongPressMoveUpdate,
-                      onEdgeForcePressStart: widget.onEdgeForcePressStart,
-                      onEdgeForcePressEnd: widget.onEdgeForcePressEnd,
-                      onEdgeForcePressPeak: widget.onEdgeForcePressPeak,
-                      onEdgeForcePressUpdate: widget.onEdgeForcePressUpdate,
-                      onEdgePanStart: widget.onEdgePanStart,
-                      onEdgePanUpdate: widget.onEdgePanUpdate,
-                      onEdgePanDown: widget.onEdgePanDown,
-                      onEdgeSecondaryTapDown: widget.onEdgeSecondaryTapDown,
-                      onEdgeSecondaryTapUp: widget.onEdgeSecondaryTapUp,
-                    ),
-                  );
-                }),
-              ),
-              widget.child,
-            ],
+          child: InteractiveViewer(
+            maxScale: widget.maxScale,
+            minScale: widget.minScale,
+            constrained: false,
+            child:  Stack(
+              children: <Widget>[
+                Container(
+                  width: (widget.cellWidth * widget.matrix.width()).toDouble(),
+                  height: (widget.cellWidth * widget.matrix.height()).toDouble(),
+                  child: Builder(builder: (ctx) {
+                    return CustomPaint(
+                      size: Size.infinite,
+                      painter: LinesPainter(
+                        ctx,
+                        widget.matrix.normalize(),
+                        widget.cellWidth,
+                        widget.contactEdgesDistance,
+                        widget.orientation,
+                        tipLength: widget.tipLength,
+                        tipAngle: widget.tipAngle,
+                        cellPadding: widget.cellPadding,
+                        paintBuilder: widget.paintBuilder,
+                        onEdgeTapDown: widget.onEdgeTapDown,
+                        edgePaintStyleForTouch: widget.edgePaintStyleForTouch,
+                        onEdgeTapUp: widget.onEdgeTapUp,
+                        onEdgeLongPressStart: widget.onEdgeLongPressStart,
+                        onEdgeLongPressEnd: widget.onEdgeLongPressEnd,
+                        onEdgeLongPressMoveUpdate:
+                            widget.onEdgeLongPressMoveUpdate,
+                        onEdgeForcePressStart: widget.onEdgeForcePressStart,
+                        onEdgeForcePressEnd: widget.onEdgeForcePressEnd,
+                        onEdgeForcePressPeak: widget.onEdgeForcePressPeak,
+                        onEdgeForcePressUpdate: widget.onEdgeForcePressUpdate,
+                        onEdgePanStart: widget.onEdgePanStart,
+                        onEdgePanUpdate: widget.onEdgePanUpdate,
+                        onEdgePanDown: widget.onEdgePanDown,
+                        onEdgeSecondaryTapDown: widget.onEdgeSecondaryTapDown,
+                        onEdgeSecondaryTapUp: widget.onEdgeSecondaryTapUp,
+                        pathBuilder: widget.pathBuilder,
+                      ),
+                    );
+                  }),
+                ),
+                widget.child,
+              ],
+            ),
           ),
           onTapDown: (tapDetail) {
             touchController.add(Gesture(GestureType.onTapDown, tapDetail));
