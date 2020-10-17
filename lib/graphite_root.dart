@@ -16,7 +16,6 @@ class GraphiteRoot extends StatefulWidget {
   final double maxScale;
   final double minScale;
 
-
   // Node
   final NodeCellBuilder builder;
 
@@ -46,6 +45,7 @@ class GraphiteRoot extends StatefulWidget {
   final EdgePaintBuilder paintBuilder;
   final EdgePathBuilder pathBuilder;
 
+  final GestureTapCallback onCanvasTap;
   final GestureEdgeTapDownCallback onEdgeTapDown;
   final PaintingStyle edgePaintStyleForTouch;
 
@@ -78,6 +78,7 @@ class GraphiteRoot extends StatefulWidget {
     this.onEdgeTapDown,
     this.edgePaintStyleForTouch,
     this.onEdgeTapUp,
+    this.onCanvasTap,
     this.onEdgeLongPressStart,
     this.onEdgeLongPressEnd,
     this.onEdgeLongPressMoveUpdate,
@@ -145,6 +146,7 @@ class _GraphiteRootState extends State<GraphiteRoot> {
       contactEdgesDistance: widget.contactEdgesDistance,
       orientation: widget.orientation,
       paintBuilder: widget.paintBuilder,
+      onCanvasTap: widget.onCanvasTap,
       onEdgeTapDown: widget.onEdgeTapDown,
       edgePaintStyleForTouch: widget.edgePaintStyleForTouch,
       onEdgeTapUp: widget.onEdgeTapUp,

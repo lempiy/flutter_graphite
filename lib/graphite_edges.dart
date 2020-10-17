@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/widgets.dart';
 import 'package:graphite/core/matrix.dart';
-import 'package:graphite/graphite_cell.dart';
 import 'package:graphite/graphite_edges_painter.dart';
 import 'package:touchable/touchable.dart';
 
@@ -25,6 +24,7 @@ class GraphiteEdges extends StatefulWidget {
   final GestureEdgeTapDownCallback onEdgeTapDown;
   final PaintingStyle edgePaintStyleForTouch;
 
+  final GestureTapCallback onCanvasTap;
   final GestureEdgeTapUpCallback onEdgeTapUp;
   final GestureEdgeLongPressStartCallback onEdgeLongPressStart;
 
@@ -66,6 +66,7 @@ class GraphiteEdges extends StatefulWidget {
     this.onEdgePanDown,
     this.onEdgeSecondaryTapDown,
     this.onEdgeSecondaryTapUp,
+    this.onCanvasTap,
     this.paintBuilder,
     this.contactEdgesDistance,
     this.orientation,
@@ -99,11 +100,12 @@ class _GraphiteEdgesState extends State<GraphiteEdges> {
             maxScale: widget.maxScale,
             minScale: widget.minScale,
             constrained: false,
-            child:  Stack(
+            child: Stack(
               children: <Widget>[
                 Container(
                   width: (widget.cellWidth * widget.matrix.width()).toDouble(),
-                  height: (widget.cellWidth * widget.matrix.height()).toDouble(),
+                  height:
+                      (widget.cellWidth * widget.matrix.height()).toDouble(),
                   child: Builder(builder: (ctx) {
                     return CustomPaint(
                       size: Size.infinite,
@@ -142,6 +144,11 @@ class _GraphiteEdgesState extends State<GraphiteEdges> {
               ],
             ),
           ),
+          onTap: () {
+            if (widget.onCanvasTap != null) {
+              widget.onCanvasTap();
+            }
+          },
           onTapDown: (tapDetail) {
             touchController.add(Gesture(GestureType.onTapDown, tapDetail));
           },

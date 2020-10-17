@@ -10,10 +10,9 @@ import 'package:graphite/graphite_cell.dart';
 import 'package:graphite/graphite_edges_painter.dart';
 import 'package:graphite/graphite_root.dart';
 
-export 'package:graphite/graphite_edges_painter.dart';
-export 'package:graphite/graphite_cell.dart';
 export 'package:graphite/core/typings.dart';
-
+export 'package:graphite/graphite_cell.dart';
+export 'package:graphite/graphite_edges_painter.dart';
 
 class DirectGraph extends StatefulWidget {
   const DirectGraph(
@@ -21,6 +20,7 @@ class DirectGraph extends StatefulWidget {
       @required this.cellWidth,
       @required this.cellPadding,
       Key key,
+      this.onCanvasTap,
       this.onEdgeTapDown,
       this.edgePaintStyleForTouch,
       this.onEdgeTapUp,
@@ -100,6 +100,7 @@ class DirectGraph extends StatefulWidget {
   final EdgePaintBuilder paintBuilder;
   final EdgePathBuilder pathBuilder;
 
+  final GestureTapCallback onCanvasTap;
   final GestureEdgeTapDownCallback onEdgeTapDown;
   final PaintingStyle edgePaintStyleForTouch;
 
@@ -127,7 +128,6 @@ class DirectGraph extends StatefulWidget {
 }
 
 class _DirectGraphState extends State<DirectGraph> {
-
   Graph toGraph(List<NodeInput> list) {
     return Graph(list: list);
   }
@@ -138,47 +138,48 @@ class _DirectGraphState extends State<DirectGraph> {
 
   Widget getRoot(BuildContext context, Matrix mtx) {
     return GraphiteRoot(
-        mtx: mtx,
-        cellWidth: widget.cellWidth,
-        cellPadding: widget.cellPadding,
-        contactEdgesDistance: widget.contactEdgesDistance,
-        orientation: widget.orientation,
-        builder: widget.builder,
-        tipLength: widget.tipLength,
-        tipAngle: widget.tipAngle,
-        onNodeTapDown: widget.onNodeTapDown,
-        onNodeTapUp: widget.onNodeTapUp,
-        onNodeLongPressStart: widget.onNodeLongPressStart,
-        onNodeLongPressEnd: widget.onNodeLongPressEnd,
-        onNodeLongPressMoveUpdate: widget.onNodeLongPressMoveUpdate,
-        onNodeForcePressStart: widget.onNodeForcePressStart,
-        onNodeForcePressEnd: widget.onNodeForcePressEnd,
-        onNodeForcePressPeak: widget.onNodeForcePressPeak,
-        onNodeForcePressUpdate: widget.onNodeForcePressUpdate,
-        onNodePanStart: widget.onNodePanStart,
-        onNodePanUpdate: widget.onNodePanUpdate,
-        onNodePanDown: widget.onNodePanDown,
-        onNodeSecondaryTapDown: widget.onNodeSecondaryTapDown,
-        onNodeSecondaryTapUp: widget.onNodeSecondaryTapUp,
-        paintBuilder: widget.paintBuilder,
-        onEdgeTapDown: widget.onEdgeTapDown,
-        edgePaintStyleForTouch: widget.edgePaintStyleForTouch,
-        onEdgeTapUp: widget.onEdgeTapUp,
-        onEdgeLongPressStart: widget.onEdgeLongPressStart,
-        onEdgeLongPressEnd: widget.onEdgeLongPressEnd,
-        onEdgeLongPressMoveUpdate: widget.onEdgeLongPressMoveUpdate,
-        onEdgeForcePressStart: widget.onEdgeForcePressStart,
-        onEdgeForcePressEnd: widget.onEdgeForcePressEnd,
-        onEdgeForcePressPeak: widget.onEdgeForcePressPeak,
-        onEdgeForcePressUpdate: widget.onEdgeForcePressUpdate,
-        onEdgePanStart: widget.onEdgePanStart,
-        onEdgePanUpdate: widget.onEdgePanUpdate,
-        onEdgePanDown: widget.onEdgePanDown,
-        onEdgeSecondaryTapDown: widget.onEdgeSecondaryTapDown,
-        onEdgeSecondaryTapUp: widget.onEdgeSecondaryTapUp,
-        minScale: widget.minScale,
-        maxScale: widget.maxScale,
-        pathBuilder: widget.pathBuilder,
+      mtx: mtx,
+      cellWidth: widget.cellWidth,
+      cellPadding: widget.cellPadding,
+      contactEdgesDistance: widget.contactEdgesDistance,
+      orientation: widget.orientation,
+      builder: widget.builder,
+      tipLength: widget.tipLength,
+      tipAngle: widget.tipAngle,
+      onCanvasTap: widget.onCanvasTap,
+      onNodeTapDown: widget.onNodeTapDown,
+      onNodeTapUp: widget.onNodeTapUp,
+      onNodeLongPressStart: widget.onNodeLongPressStart,
+      onNodeLongPressEnd: widget.onNodeLongPressEnd,
+      onNodeLongPressMoveUpdate: widget.onNodeLongPressMoveUpdate,
+      onNodeForcePressStart: widget.onNodeForcePressStart,
+      onNodeForcePressEnd: widget.onNodeForcePressEnd,
+      onNodeForcePressPeak: widget.onNodeForcePressPeak,
+      onNodeForcePressUpdate: widget.onNodeForcePressUpdate,
+      onNodePanStart: widget.onNodePanStart,
+      onNodePanUpdate: widget.onNodePanUpdate,
+      onNodePanDown: widget.onNodePanDown,
+      onNodeSecondaryTapDown: widget.onNodeSecondaryTapDown,
+      onNodeSecondaryTapUp: widget.onNodeSecondaryTapUp,
+      paintBuilder: widget.paintBuilder,
+      onEdgeTapDown: widget.onEdgeTapDown,
+      edgePaintStyleForTouch: widget.edgePaintStyleForTouch,
+      onEdgeTapUp: widget.onEdgeTapUp,
+      onEdgeLongPressStart: widget.onEdgeLongPressStart,
+      onEdgeLongPressEnd: widget.onEdgeLongPressEnd,
+      onEdgeLongPressMoveUpdate: widget.onEdgeLongPressMoveUpdate,
+      onEdgeForcePressStart: widget.onEdgeForcePressStart,
+      onEdgeForcePressEnd: widget.onEdgeForcePressEnd,
+      onEdgeForcePressPeak: widget.onEdgeForcePressPeak,
+      onEdgeForcePressUpdate: widget.onEdgeForcePressUpdate,
+      onEdgePanStart: widget.onEdgePanStart,
+      onEdgePanUpdate: widget.onEdgePanUpdate,
+      onEdgePanDown: widget.onEdgePanDown,
+      onEdgeSecondaryTapDown: widget.onEdgeSecondaryTapDown,
+      onEdgeSecondaryTapUp: widget.onEdgeSecondaryTapUp,
+      minScale: widget.minScale,
+      maxScale: widget.maxScale,
+      pathBuilder: widget.pathBuilder,
     );
   }
 
