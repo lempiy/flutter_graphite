@@ -60,8 +60,12 @@ class GraphBasic {
       }
       addUniqueRelation(incomesByNodeIdMap, outcomeId, node.id);
       addUniqueRelation(outcomesByNodeIdMap, node.id, outcomeId);
-      totalSet = this.traverseVertically(
-          this.nodesMap[outcomeId], Set.from(branchSet), totalSet);
+      final nextNode = this.nodesMap[outcomeId];
+      if (nextNode == null) {
+        throw 'node $outcomeId not found';
+      }
+      totalSet =
+          this.traverseVertically(nextNode, Set.from(branchSet), totalSet);
     });
     return totalSet;
   }
