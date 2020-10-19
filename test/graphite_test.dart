@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:graphite/core/typings.dart';
 import 'package:graphite/core/graph.dart';
+import 'package:graphite/core/graph_basic.dart';
 
 
 const presetBasic = '[{"id":"A","next":["B"]},{"id":"B","next":["C","D","E"]},{"id":"C","next":["F"]},{"id":"D","next":["J"]},{"id":"E","next":["J"]},{"id":"J","next":["I"]},{"id":"I","next":["H"]},{"id":"F","next":["K"]},{"id":"K","next":["L"]},{"id":"H","next":["L"]},{"id":"L","next":["P"]},{"id":"P","next":["M","N"]},{"id":"M","next":[]},{"id":"N","next":[]}]';
@@ -33,5 +34,13 @@ void main() {
     final rotated = mtx.rotate();
     expect(mtx.toString().trim(), expectBasic.trim());
     expect(rotated.toString().trim(), expectRotated.trim());
+  });
+
+  test('creating graph without matching nodes throws an exception', () {
+    List<NodeInput> list = [
+      NodeInput(id: '0', next: ['1']),
+      NodeInput(id: '1', next: ['2'])
+    ];
+    expect(() => GraphBasic(list: list), throwsA('node 2 not found'));
   });
 }
