@@ -17,3 +17,8 @@
 * Ability to scale & pan graph through Interactive Widget.
 * Removed ScrollDirection enum (replaced ScrollViews with Interactive Widget).
 * Added ability to customize path shape with pathBuilder param.
+
+## [0.2.3] - December 16, 2020
+
+* Core lib bug fixes
+
