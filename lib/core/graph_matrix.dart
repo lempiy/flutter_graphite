@@ -96,7 +96,7 @@ class GraphMatrix extends GraphBasic {
           x: coords[0],
           y: coords[1],
           isSelfLoop: false);
-    });
+    }).toList();
     bool skip = loopNodes.any((LoopNode income) {
       int checkY = income.y != 0 ? income.y - 1 : 0;
       return mtx.hasVerticalCollision(state.x, checkY);
