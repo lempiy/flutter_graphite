@@ -18,39 +18,45 @@ class GraphiteEdges extends StatefulWidget {
   final double minScale;
 
   // Edge
-  final EdgePaintBuilder paintBuilder;
-  final EdgePathBuilder pathBuilder;
+  final EdgePaintBuilder? paintBuilder;
+  final EdgePathBuilder? pathBuilder;
 
-  final GestureEdgeTapDownCallback onEdgeTapDown;
-  final PaintingStyle edgePaintStyleForTouch;
+  final GestureEdgeTapDownCallback? onEdgeTapDown;
+  final PaintingStyle? edgePaintStyleForTouch;
 
-  final GestureTapCallback onCanvasTap;
-  final GestureEdgeTapUpCallback onEdgeTapUp;
-  final GestureEdgeLongPressStartCallback onEdgeLongPressStart;
+  final GestureTapCallback? onCanvasTap;
+  final GestureEdgeTapUpCallback? onEdgeTapUp;
+  final GestureEdgeLongPressStartCallback? onEdgeLongPressStart;
 
-  final GestureEdgeLongPressEndCallback onEdgeLongPressEnd;
-  final GestureEdgeLongPressMoveUpdateCallback onEdgeLongPressMoveUpdate;
+  final GestureEdgeLongPressEndCallback? onEdgeLongPressEnd;
+  final GestureEdgeLongPressMoveUpdateCallback? onEdgeLongPressMoveUpdate;
 
-  final GestureEdgeForcePressStartCallback onEdgeForcePressStart;
-  final GestureEdgeForcePressEndCallback onEdgeForcePressEnd;
+  final GestureEdgeForcePressStartCallback? onEdgeForcePressStart;
+  final GestureEdgeForcePressEndCallback? onEdgeForcePressEnd;
 
-  final GestureEdgeForcePressPeakCallback onEdgeForcePressPeak;
-  final GestureEdgeForcePressUpdateCallback onEdgeForcePressUpdate;
+  final GestureEdgeForcePressPeakCallback? onEdgeForcePressPeak;
+  final GestureEdgeForcePressUpdateCallback? onEdgeForcePressUpdate;
 
-  final GestureEdgeDragStartCallback onEdgePanStart;
-  final GestureEdgeDragUpdateCallback onEdgePanUpdate;
+  final GestureEdgeDragStartCallback? onEdgePanStart;
+  final GestureEdgeDragUpdateCallback? onEdgePanUpdate;
 
-  final GestureEdgeDragDownCallback onEdgePanDown;
-  final GestureEdgeTapDownCallback onEdgeSecondaryTapDown;
+  final GestureEdgeDragDownCallback? onEdgePanDown;
+  final GestureEdgeTapDownCallback? onEdgeSecondaryTapDown;
 
-  final GestureEdgeTapUpCallback onEdgeSecondaryTapUp;
+  final GestureEdgeTapUpCallback? onEdgeSecondaryTapUp;
 
   const GraphiteEdges({
-    Key key,
-    @required this.child,
-    @required this.cellWidth,
-    @required this.matrix,
-    this.cellPadding,
+    Key? key,
+    required this.child,
+    required this.cellWidth,
+    required this.matrix,
+    required this.cellPadding,
+    required this.contactEdgesDistance,
+    required this.orientation,
+    required this.tipLength,
+    required this.tipAngle,
+    required this.maxScale,
+    required this.minScale,
     this.onEdgeTapDown,
     this.edgePaintStyleForTouch,
     this.onEdgeTapUp,
@@ -68,12 +74,6 @@ class GraphiteEdges extends StatefulWidget {
     this.onEdgeSecondaryTapUp,
     this.onCanvasTap,
     this.paintBuilder,
-    this.contactEdgesDistance,
-    this.orientation,
-    this.tipLength,
-    this.tipAngle,
-    this.maxScale,
-    this.minScale,
     this.pathBuilder,
   }) : super(key: key);
 
@@ -84,7 +84,7 @@ class GraphiteEdges extends StatefulWidget {
 class _GraphiteEdgesState extends State<GraphiteEdges> {
   final StreamController<Gesture> touchController =
       StreamController.broadcast();
-  StreamSubscription streamSubscription;
+  StreamSubscription? streamSubscription;
 
   Future<void> addStreamListener(Function(Gesture) callBack) async {
     await streamSubscription?.cancel();
@@ -113,7 +113,7 @@ class _GraphiteEdgesState extends State<GraphiteEdges> {
                         ctx,
                         widget.matrix.normalize(),
                         widget.cellWidth,
-                        widget.contactEdgesDistance,
+                        widget.contactEdgesDistance ,
                         widget.orientation,
                         tipLength: widget.tipLength,
                         tipAngle: widget.tipAngle,
@@ -146,7 +146,7 @@ class _GraphiteEdgesState extends State<GraphiteEdges> {
           ),
           onTap: () {
             if (widget.onCanvasTap != null) {
-              widget.onCanvasTap();
+              widget.onCanvasTap!();
             }
           },
           onTapDown: (tapDetail) {

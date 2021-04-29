@@ -1,4 +1,3 @@
-import 'package:meta/meta.dart';
 import 'dart:convert';
 
 enum NodeType {
@@ -29,8 +28,8 @@ String nodeInputToJson(List<NodeInput> data) =>
 
 class NodeInput {
   NodeInput({
-    @required this.id,
-    @required this.next,
+    required this.id,
+    required this.next,
   });
 
   final String id;
@@ -38,14 +37,12 @@ class NodeInput {
 
   factory NodeInput.fromJson(Map<String, dynamic> json) => NodeInput(
         id: json["id"] == null ? null : json["id"],
-        next: json["next"] == null
-            ? null
-            : List<String>.from(json["next"].map((x) => x)),
+        next: List<String>.from(json["next"].map((x) => x)),
       );
 
   Map<String, dynamic> toJson() => {
-        "id": id == null ? null : id,
-        "next": next == null ? null : List<dynamic>.from(next.map((x) => x)),
+        "id": id,
+        "next": List<dynamic>.from(next.map((x) => x)),
       };
 }
 
@@ -58,19 +55,19 @@ enum AnchorType {
 
 class MatrixNode extends NodeOutput {
   MatrixNode({
-    @required this.x,
-    @required this.y,
-    @required String id,
-    @required List<String> next,
-    AnchorType anchorType,
-    String from,
-    String to,
-    AnchorOrientation orientation,
-    bool isAnchor,
-    AnchorMargin anchorMargin,
-    List<String> passedIncomes,
-    List<String> renderIncomes,
-    int childrenOnMatrix,
+    required this.x,
+    required this.y,
+    required String id,
+    required List<String> next,
+    AnchorType? anchorType,
+    String? from,
+    String? to,
+    AnchorOrientation? orientation,
+    bool isAnchor = false,
+    AnchorMargin? anchorMargin,
+    List<String> passedIncomes = const [],
+    List<String> renderIncomes = const [],
+    int? childrenOnMatrix,
   }) : super(
           id: id,
           next: next,
@@ -85,7 +82,7 @@ class MatrixNode extends NodeOutput {
           childrenOnMatrix: childrenOnMatrix,
         );
   static MatrixNode fromNodeOutput(
-      {@required int x, @required int y, @required NodeOutput nodeOutput}) {
+      {required int x, required int y, required NodeOutput nodeOutput}) {
     return MatrixNode(
       x: x,
       y: y,
@@ -109,38 +106,38 @@ class MatrixNode extends NodeOutput {
 
 class NodeOutput extends NodeInput {
   NodeOutput({
-    @required String id,
-    @required List<String> next,
+    required String id,
+    required List<String> next,
     this.anchorType,
     this.from,
     this.to,
     this.orientation,
-    this.isAnchor,
-    this.passedIncomes,
-    this.renderIncomes,
+    this.isAnchor = false,
+    this.passedIncomes = const [],
+    this.renderIncomes = const [],
     this.childrenOnMatrix,
     this.anchorMargin,
   }) : super(id: id, next: next);
 
-  AnchorType anchorType;
-  String from;
-  String to;
-  AnchorOrientation orientation;
-  AnchorMargin anchorMargin;
+  AnchorType? anchorType;
+  String? from;
+  String? to;
+  AnchorOrientation? orientation;
+  AnchorMargin? anchorMargin;
 
   bool isAnchor;
-  List<String> passedIncomes;
-  List<String> renderIncomes;
-  int childrenOnMatrix;
+  List<String> passedIncomes = [];
+  List<String> renderIncomes = [];
+  int? childrenOnMatrix;
 }
 
 class LoopNode {
   LoopNode({
-    this.id,
-    this.node,
-    this.x,
-    this.y,
-    this.isSelfLoop,
+    required this.id,
+    required this.node,
+    required this.x,
+    required this.y,
+    this.isSelfLoop = false,
   });
 
   String id;

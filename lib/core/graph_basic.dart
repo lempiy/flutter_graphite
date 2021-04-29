@@ -1,8 +1,7 @@
-import 'package:meta/meta.dart';
 import 'package:graphite/core/typings.dart';
 
 bool isMultiple(Map<String, List<String>> m, String id) {
-  return m.containsKey(id) && m[id].length > 1;
+  return m.containsKey(id) && m[id]!.length > 1;
 }
 
 void addUniqueRelation(Map<String, List<String>> rm, String key, String value) {
@@ -10,13 +9,13 @@ void addUniqueRelation(Map<String, List<String>> rm, String key, String value) {
   if (!ok) {
     rm[key] = [value];
   }
-  if (!rm[key].contains(value)) {
-    rm[key].add(value);
+  if (!rm[key]!.contains(value)) {
+    rm[key]!.add(value);
   }
 }
 
 class GraphBasic {
-  GraphBasic({@required List<NodeInput> list}) {
+  GraphBasic({required List<NodeInput> list}) {
     this.list = list;
     this.nodesMap = this.list.fold(Map(), (m, node) {
       if (m.containsKey(node.id)) {
@@ -25,9 +24,6 @@ class GraphBasic {
       m[node.id] = node;
       return m;
     });
-    this.incomesByNodeIdMap = Map();
-    this.outcomesByNodeIdMap = Map();
-    this.loopsByNodeIdMap = Map();
 
     this.detectIncomesAndOutcomes();
   }
@@ -74,7 +70,7 @@ class GraphBasic {
     if (!this.loopsByNodeIdMap.containsKey(nodeId)) {
       return false;
     }
-    return this.loopsByNodeIdMap[nodeId].contains(outcomeId);
+    return this.loopsByNodeIdMap[nodeId]?.contains(outcomeId) ?? false;
   }
 
   List<NodeInput> roots() {
@@ -85,7 +81,7 @@ class GraphBasic {
 
   bool isRoot(String id) {
     return !this.incomesByNodeIdMap.containsKey(id) ||
-        this.incomesByNodeIdMap[id].length == 0;
+        this.incomesByNodeIdMap[id]?.length == 0;
   }
 
   bool isSplit(String id) {
@@ -97,19 +93,19 @@ class GraphBasic {
   }
 
   List<String> loops(String id) {
-    return this.loopsByNodeIdMap[id];
+    return this.loopsByNodeIdMap[id] ?? [];
   }
 
   List<String> outcomes(String id) {
-    return this.outcomesByNodeIdMap[id];
+    return this.outcomesByNodeIdMap[id] ?? [];
   }
 
   List<String> incomes(String id) {
-    return this.incomesByNodeIdMap[id];
+    return this.incomesByNodeIdMap[id] ?? [];
   }
 
   NodeInput node(String id) {
-    return this.nodesMap[id];
+    return this.nodesMap[id]!;
   }
 
   NodeType nodeType(String id) {
@@ -123,15 +119,15 @@ class GraphBasic {
 
   List<NodeInput> getOutcomesArray(String itemId) {
     List<String> outcomes = this.outcomes(itemId);
-    if (outcomes == null || outcomes.length == 0) return [];
+    if (outcomes.length == 0) return [];
     return outcomes.map((String id) {
       return this.node(id);
     }).toList(growable: true);
   }
 
-  List<NodeInput> list;
-  Map<String, NodeInput> nodesMap;
-  Map<String, List<String>> incomesByNodeIdMap;
-  Map<String, List<String>> outcomesByNodeIdMap;
-  Map<String, List<String>> loopsByNodeIdMap;
+  List<NodeInput> list = [];
+  Map<String, NodeInput> nodesMap = {};
+  Map<String, List<String>> incomesByNodeIdMap = {};
+  Map<String, List<String>> outcomesByNodeIdMap = {};
+  Map<String, List<String>> loopsByNodeIdMap = {};
 }

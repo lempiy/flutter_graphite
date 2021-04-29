@@ -1,4 +1,4 @@
-import 'package:arrow_path/arrow_path.dart';
+import 'package:flutter_arrow_path/flutter_arrow_path.dart';
 import 'package:flutter/widgets.dart';
 import 'package:graphite/core/matrix.dart';
 import 'package:graphite/core/typings.dart';
@@ -145,34 +145,34 @@ class LinesPainter extends CustomPainter {
   final double cellPadding;
   final double contactEdgesDistance;
   final BuildContext context;
-  final EdgePaintBuilder paintBuilder;
-  final EdgePathBuilder pathBuilder;
+  final EdgePaintBuilder? paintBuilder;
+  final EdgePathBuilder? pathBuilder;
   final MatrixOrientation orientation;
   final double tipLength;
   final double tipAngle;
 
-  final GestureEdgeTapDownCallback onEdgeTapDown;
-  final PaintingStyle edgePaintStyleForTouch;
+  final GestureEdgeTapDownCallback? onEdgeTapDown;
+  final PaintingStyle? edgePaintStyleForTouch;
 
-  final GestureEdgeTapUpCallback onEdgeTapUp;
-  final GestureEdgeLongPressStartCallback onEdgeLongPressStart;
+  final GestureEdgeTapUpCallback? onEdgeTapUp;
+  final GestureEdgeLongPressStartCallback? onEdgeLongPressStart;
 
-  final GestureEdgeLongPressEndCallback onEdgeLongPressEnd;
-  final GestureEdgeLongPressMoveUpdateCallback onEdgeLongPressMoveUpdate;
+  final GestureEdgeLongPressEndCallback? onEdgeLongPressEnd;
+  final GestureEdgeLongPressMoveUpdateCallback? onEdgeLongPressMoveUpdate;
 
-  final GestureEdgeForcePressStartCallback onEdgeForcePressStart;
-  final GestureEdgeForcePressEndCallback onEdgeForcePressEnd;
+  final GestureEdgeForcePressStartCallback? onEdgeForcePressStart;
+  final GestureEdgeForcePressEndCallback? onEdgeForcePressEnd;
 
-  final GestureEdgeForcePressPeakCallback onEdgeForcePressPeak;
-  final GestureEdgeForcePressUpdateCallback onEdgeForcePressUpdate;
+  final GestureEdgeForcePressPeakCallback? onEdgeForcePressPeak;
+  final GestureEdgeForcePressUpdateCallback? onEdgeForcePressUpdate;
 
-  final GestureEdgeDragStartCallback onEdgePanStart;
-  final GestureEdgeDragUpdateCallback onEdgePanUpdate;
+  final GestureEdgeDragStartCallback? onEdgePanStart;
+  final GestureEdgeDragUpdateCallback? onEdgePanUpdate;
 
-  final GestureEdgeDragDownCallback onEdgePanDown;
-  final GestureEdgeTapDownCallback onEdgeSecondaryTapDown;
+  final GestureEdgeDragDownCallback? onEdgePanDown;
+  final GestureEdgeTapDownCallback? onEdgeSecondaryTapDown;
 
-  final GestureEdgeTapUpCallback onEdgeSecondaryTapUp;
+  final GestureEdgeTapUpCallback? onEdgeSecondaryTapUp;
 
   Path _defaultEdgePathBuilder(List<List<double>> points) {
     var path = Path();
@@ -182,18 +182,17 @@ class LinesPainter extends CustomPainter {
   }
 
   List<Edge> collectEdges(MatrixNode node, Map<String, MatrixNode> edges) {
-    return node.renderIncomes != null
-        ? node.renderIncomes.map((i) => edges[i]).fold([],
-            (List<Edge> acc, MatrixNode income) {
+    return node.renderIncomes.map((i) => edges[i]).fold([],
+            (List<Edge> acc, MatrixNode? income) {
             List<List<double>> points = [];
-            var incomeNode = edges[income.id];
+            var incomeNode = edges[income!.id];
             var startNode = node;
-            var margins = getEdgeMargins(startNode, incomeNode);
+            var margins = getEdgeMargins(startNode, incomeNode!);
             var nodeMargin = margins[0];
             var incomeMargin = margins[1];
             var direction = getVectorDirection(
                 startNode.x, startNode.y, incomeNode.x, incomeNode.y);
-            var directions = pointResolversMap[direction];
+            var directions = pointResolversMap[direction]!;
             var from = directions[0], to = directions[1];
             List<double> startPoint = getPointWithResolver(
                 from,
@@ -204,13 +203,13 @@ class LinesPainter extends CustomPainter {
                 nodeMargin,
                 orientation);
             points.add(startPoint);
-            while (incomeNode.isAnchor) {
+            while (incomeNode!.isAnchor) {
               margins = getEdgeMargins(startNode, incomeNode);
               nodeMargin = margins[0];
               incomeMargin = margins[1];
               direction = getVectorDirection(
                   startNode.x, startNode.y, incomeNode.x, incomeNode.y);
-              directions = pointResolversMap[direction];
+              directions = pointResolversMap[direction]!;
               from = directions[0];
               to = directions[1];
               points.add(getPointWithResolver(to, cellWidth, cellPadding,
@@ -223,15 +222,14 @@ class LinesPainter extends CustomPainter {
             incomeMargin = margins[1];
             direction = getVectorDirection(
                 startNode.x, startNode.y, incomeNode.x, incomeNode.y);
-            directions = pointResolversMap[direction];
+            directions = pointResolversMap[direction]!;
             from = directions[0];
             to = directions[1];
             points.add(getPointWithResolver(to, cellWidth, cellPadding,
                 contactEdgesDistance, incomeNode, incomeMargin, orientation));
             acc.add(Edge(points, incomeNode, node));
             return acc;
-          })
-        : [];
+          });
   }
 
   const LinesPainter(
@@ -240,7 +238,9 @@ class LinesPainter extends CustomPainter {
     this.cellWidth,
     this.contactEdgesDistance,
     this.orientation, {
-    this.cellPadding,
+    required this.cellPadding,
+    required this.tipLength,
+    required this.tipAngle,
     this.onEdgeTapDown,
     this.edgePaintStyleForTouch,
     this.onEdgeTapUp,
@@ -257,8 +257,6 @@ class LinesPainter extends CustomPainter {
     this.onEdgeSecondaryTapDown,
     this.onEdgeSecondaryTapUp,
     this.paintBuilder,
-    this.tipLength,
-    this.tipAngle,
     this.pathBuilder,
   });
 
@@ -272,53 +270,53 @@ class LinesPainter extends CustomPainter {
     });
     _state.forEach((e) {
       var points = e.points.reversed.toList();
-      var path = pathBuilder == null ? _defaultEdgePathBuilder(points) : pathBuilder(points);
+      var path = pathBuilder == null ? _defaultEdgePathBuilder(points) : pathBuilder!(points);
       final paint =
-        paintBuilder == null ? _defaultPaintBuilder(e) : paintBuilder(e);
+        paintBuilder == null ? _defaultPaintBuilder(e) : paintBuilder!(e);
       canvas.drawPath(
         path,
         paint,
         paintStyleForTouch: edgePaintStyleForTouch,
         onTapDown: onEdgeTapDown != null
-            ? (details) => onEdgeTapDown(details, e)
+            ? (details) => onEdgeTapDown!(details, e)
             : null,
         onTapUp:
-            onEdgeTapUp != null ? (details) => onEdgeTapUp(details, e) : null,
+            onEdgeTapUp != null ? (details) => onEdgeTapUp!(details, e) : null,
         onLongPressStart: onEdgeLongPressStart != null
-            ? (details) => onEdgeLongPressStart(details, e)
+            ? (details) => onEdgeLongPressStart!(details, e)
             : null,
         onLongPressEnd: onEdgeLongPressEnd != null
-            ? (details) => onEdgeLongPressEnd(details, e)
+            ? (details) => onEdgeLongPressEnd!(details, e)
             : null,
         onLongPressMoveUpdate: onEdgeLongPressMoveUpdate != null
-            ? (details) => onEdgeLongPressMoveUpdate(details, e)
+            ? (details) => onEdgeLongPressMoveUpdate!(details, e)
             : null,
         onForcePressStart: onEdgeForcePressStart != null
-            ? (details) => onEdgeForcePressStart(details, e)
+            ? (details) => onEdgeForcePressStart!(details, e)
             : null,
         onForcePressEnd: onEdgeForcePressEnd != null
-            ? (details) => onEdgeForcePressEnd(details, e)
+            ? (details) => onEdgeForcePressEnd!(details, e)
             : null,
         onForcePressPeak: onEdgeForcePressPeak != null
-            ? (details) => onEdgeForcePressPeak(details, e)
+            ? (details) => onEdgeForcePressPeak!(details, e)
             : null,
         onForcePressUpdate: onEdgeForcePressUpdate != null
-            ? (details) => onEdgeForcePressUpdate(details, e)
+            ? (details) => onEdgeForcePressUpdate!(details, e)
             : null,
         onPanStart: onEdgePanStart != null
-            ? (details) => onEdgePanStart(details, e)
+            ? (details) => onEdgePanStart!(details, e)
             : null,
         onPanUpdate: onEdgePanUpdate != null
-            ? (details) => onEdgePanUpdate(details, e)
+            ? (details) => onEdgePanUpdate!(details, e)
             : null,
         onPanDown: onEdgePanDown != null
-            ? (details) => onEdgePanDown(details, e)
+            ? (details) => onEdgePanDown!(details, e)
             : null,
         onSecondaryTapDown: onEdgeSecondaryTapDown != null
-            ? (details) => onEdgeSecondaryTapDown(details, e)
+            ? (details) => onEdgeSecondaryTapDown!(details, e)
             : null,
         onSecondaryTapUp: onEdgeSecondaryTapUp != null
-            ? (details) => onEdgeSecondaryTapUp(details, e)
+            ? (details) => onEdgeSecondaryTapUp!(details, e)
             : null,
       );
     });
@@ -332,11 +330,11 @@ class LinesPainter extends CustomPainter {
 
 List<AnchorMargin> getEdgeMargins(MatrixNode node, MatrixNode income) {
   if (node.isAnchor && income.isAnchor) {
-    return [node.anchorMargin, income.anchorMargin];
+    return [node.anchorMargin!, income.anchorMargin!];
   } else if (node.isAnchor) {
-    return [node.anchorMargin, node.anchorMargin];
+    return [node.anchorMargin!, node.anchorMargin!];
   } else if (income.isAnchor) {
-    return [income.anchorMargin, income.anchorMargin];
+    return [income.anchorMargin!, income.anchorMargin!];
   } else {
     return [AnchorMargin.none, AnchorMargin.none];
   }

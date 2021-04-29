@@ -169,11 +169,11 @@ class _CustomPageState extends State<CustomPage> {
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.view_module),
-            title: Text('Basic'),
+            label: 'Basic',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.view_comfy),
-            title: Text('Custom'),
+            label: 'Custom',
           ),
         ],
         currentIndex: _selectedIndex,

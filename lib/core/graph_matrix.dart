@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:meta/meta.dart';
 import 'package:graphite/core/graph_basic.dart';
 import 'package:graphite/core/matrix.dart';
 import 'package:graphite/core/traverse_queue.dart';
@@ -12,15 +11,15 @@ class State {
   int x;
   int y;
   State({
-    @required this.mtx,
-    @required this.queue,
+    required this.mtx,
+    required this.queue,
     this.x = 0,
     this.y = 0,
   });
 }
 
 class GraphMatrix extends GraphBasic {
-  GraphMatrix({@required List<NodeInput> list}) : super(list: list);
+  GraphMatrix({required List<NodeInput> list}) : super(list: list);
 
   bool joinHasUnresolvedIncomes(NodeOutput item) {
     return item.passedIncomes.length != incomes(item.id).length;
@@ -38,17 +37,17 @@ class GraphMatrix extends GraphBasic {
   }
 
   int getLowestYAmongIncomes(NodeOutput item, Matrix mtx) {
-    var incomes = item.passedIncomes;
+    final incomes = item.passedIncomes;
     if (incomes.length == 0) {
       return 0;
     }
     return incomes.map((String id) {
-      List<int> coords = mtx.find((NodeOutput itm) {
+      List<int>? coords = mtx.find((NodeOutput itm) {
         return itm.id == id;
       });
-      if (coords.length != 2)
+      if (coords?.length != 2)
         throw "cannot find coordinates for passed income: $id";
-      return coords[1];
+      return coords![1];
     }).reduce(min);
   }
 
@@ -84,11 +83,11 @@ class GraphMatrix extends GraphBasic {
         return LoopNode(
             id: incomeId, node: item, x: state.x, y: state.y, isSelfLoop: true);
       }
-      List<int> coords = mtx.find((NodeOutput n) {
+      List<int>? coords = mtx.find((NodeOutput n) {
         return n.id == incomeId;
       });
-      if (coords.length != 2) throw "loop target $incomeId not found on matrix";
-      NodeOutput node = mtx.getByCoords(coords[0], coords[1]);
+      if (coords?.length != 2) throw "loop target $incomeId not found on matrix";
+      NodeOutput? node = mtx.getByCoords(coords![0], coords[1]);
       if (node == null) throw "loop target node $incomeId not found on matrix";
       return LoopNode(
           id: incomeId,
@@ -222,18 +221,18 @@ class GraphMatrix extends GraphBasic {
 
   void insertJoinIncomes(NodeOutput item, State state, TraverseQueue levelQueue,
       bool addItemToQueue) {
-    var mtx = state.mtx, queue = state.queue, incomes = item.passedIncomes;
-    var lowestY = this.getLowestYAmongIncomes(item, mtx);
+    final mtx = state.mtx, queue = state.queue, incomes = item.passedIncomes;
+    final lowestY = this.getLowestYAmongIncomes(item, mtx);
     incomes.forEach((String incomeId) {
-      var found = mtx.findNode((NodeOutput n) {
+      final found = mtx.findNode((NodeOutput n) {
         return n.id == incomeId;
       });
       if (found == null) throw "income $incomeId was not found";
-      var y = found.coords[1], income = found.item;
+      final y = found.coords[1], income = found.item;
       if (lowestY == y) {
         item.renderIncomes.add(incomeId);
         income.childrenOnMatrix =
-            min(income.childrenOnMatrix + 1, income.next.length);
+            min((income.childrenOnMatrix ?? 0) + 1, income.next.length);
         return;
       }
       state.y = y;
@@ -274,7 +273,7 @@ class GraphMatrix extends GraphBasic {
       if (found == null) throw "income $incomeId not found on matrix";
       var coords = found.coords, income = found.item;
       income.childrenOnMatrix =
-          min(income.childrenOnMatrix + 1, income.next.length);
+          min((income.childrenOnMatrix ?? 0) + 1, income.next.length);
       mtx.insert(coords[0], coords[1], income);
     });
     return;

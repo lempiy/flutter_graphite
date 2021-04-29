@@ -1,10 +1,9 @@
-import 'package:meta/meta.dart';
 import 'package:graphite/core/typings.dart';
 
 class FindNodeResult {
   FindNodeResult({
-    @required this.coords,
-    @required this.item,
+    required this.coords,
+    required this.item,
   });
   List<int> coords;
   NodeOutput item;
@@ -40,7 +39,7 @@ class Matrix {
       return false;
     }
     var row = this.s[y];
-    return row.any((NodeOutput point) {
+    return row.any((NodeOutput? point) {
       if (point != null && !this.isAllChildrenOnMatrix(point)) {
         return true;
       }
@@ -63,12 +62,12 @@ class Matrix {
     if (this.height() == 0) {
       return 0;
     }
-    var entry = this.s.asMap().entries.firstWhere((data) {
-      var index = data.key;
+    final entries = this.s.asMap().entries.toList();
+    final idx = entries.indexWhere((data) {
       var row = data.value;
       return row.length == 0 || x >= row.length || row[x] == null;
-    }, orElse: () => null);
-    var y = entry == null ? this.height() : entry.key;
+    });
+    var y = idx == -1 ? this.height() : entries[idx].key;
     return y;
   }
 
@@ -87,7 +86,7 @@ class Matrix {
   }
 
   void insertRowBefore(int y) {
-    List<NodeOutput> row = List.filled(this.width(), null, growable: true);
+    List<NodeOutput?> row = List.filled(this.width(), null, growable: true);
     this.s.insert(y, row);
   }
 
@@ -97,8 +96,8 @@ class Matrix {
     });
   }
 
-  List<int> find(bool Function(NodeOutput) f) {
-    List<int> result;
+  List<int>? find(bool Function(NodeOutput) f) {
+    List<int>? result;
     this.s.asMap().entries.any((rowEntry) {
       var y = rowEntry.key;
       var row = rowEntry.value;
@@ -116,8 +115,8 @@ class Matrix {
     return result;
   }
 
-  FindNodeResult findNode(bool Function(NodeOutput) f) {
-    FindNodeResult result;
+  FindNodeResult? findNode(bool Function(NodeOutput) f) {
+    FindNodeResult? result;
     this.s.asMap().entries.any((rowEntry) {
       var y = rowEntry.key;
       var row = rowEntry.value;
@@ -135,14 +134,14 @@ class Matrix {
     return result;
   }
 
-  NodeOutput getByCoords(int x, int y) {
+  NodeOutput? getByCoords(int x, int y) {
     if (x >= this.width() || y >= this.height()) {
       return null;
     }
     return this.s[y][x];
   }
 
-  void insert(int x, int y, NodeOutput item) {
+  void insert(int x, int y, NodeOutput? item) {
     if (this.height() <= y) {
       this.extendHeight(y + 1);
     }
@@ -188,16 +187,16 @@ class Matrix {
 
   String toString() {
     var result = "", max = 0;
-    s.forEach((List<NodeOutput> row) {
-      row.forEach((NodeOutput cell) {
+    s.forEach((List<NodeOutput?> row) {
+      row.forEach((NodeOutput? cell) {
         if (cell == null) return;
         if (cell.id.length > max) {
           max = cell.id.length;
         }
       });
     });
-    s.forEach((List<NodeOutput> row) {
-      row.forEach((NodeOutput cell) {
+    s.forEach((List<NodeOutput?> row) {
+      row.forEach((NodeOutput? cell) {
         if (cell == null) {
           result += fillWithSpaces(" ", max);
           result += "│";
@@ -212,5 +211,5 @@ class Matrix {
   }
 
   MatrixOrientation orientation;
-  List<List<NodeOutput>> s;
+  List<List<NodeOutput?>> s;
 }
