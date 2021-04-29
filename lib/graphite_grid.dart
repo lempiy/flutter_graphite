@@ -9,34 +9,34 @@ class GraphiteGrid extends StatefulWidget {
   final double cellWidth;
   final double cellPadding;
 
-  final NodeCellBuilder builder;
+  final NodeCellBuilder? builder;
 
-  final GestureNodeTapDownCallback onNodeTapDown;
+  final GestureNodeTapDownCallback? onNodeTapDown;
 
-  final GestureNodeTapUpCallback onNodeTapUp;
-  final GestureNodeLongPressStartCallback onNodeLongPressStart;
+  final GestureNodeTapUpCallback? onNodeTapUp;
+  final GestureNodeLongPressStartCallback? onNodeLongPressStart;
 
-  final GestureNodeLongPressEndCallback onNodeLongPressEnd;
-  final GestureNodeLongPressMoveUpdateCallback onNodeLongPressMoveUpdate;
+  final GestureNodeLongPressEndCallback? onNodeLongPressEnd;
+  final GestureNodeLongPressMoveUpdateCallback? onNodeLongPressMoveUpdate;
 
-  final GestureNodeForcePressStartCallback onNodeForcePressStart;
-  final GestureNodeForcePressEndCallback onNodeForcePressEnd;
+  final GestureNodeForcePressStartCallback? onNodeForcePressStart;
+  final GestureNodeForcePressEndCallback? onNodeForcePressEnd;
 
-  final GestureNodeForcePressPeakCallback onNodeForcePressPeak;
-  final GestureNodeForcePressUpdateCallback onNodeForcePressUpdate;
+  final GestureNodeForcePressPeakCallback? onNodeForcePressPeak;
+  final GestureNodeForcePressUpdateCallback? onNodeForcePressUpdate;
 
-  final GestureNodeDragStartCallback onNodePanStart;
-  final GestureNodeDragUpdateCallback onNodePanUpdate;
+  final GestureNodeDragStartCallback? onNodePanStart;
+  final GestureNodeDragUpdateCallback? onNodePanUpdate;
 
-  final GestureNodeDragDownCallback onNodePanDown;
-  final GestureNodeTapDownCallback onNodeSecondaryTapDown;
+  final GestureNodeDragDownCallback? onNodePanDown;
+  final GestureNodeTapDownCallback? onNodeSecondaryTapDown;
 
-  final GestureNodeTapUpCallback onNodeSecondaryTapUp;
+  final GestureNodeTapUpCallback? onNodeSecondaryTapUp;
 
   GraphiteGrid({
-    @required this.matrix,
-    @required this.cellWidth,
-    @required this.cellPadding,
+    required this.matrix,
+    required this.cellWidth,
+    required this.cellPadding,
     this.onNodeTapDown,
     this.onNodeTapUp,
     this.onNodeLongPressStart,
@@ -58,7 +58,7 @@ class GraphiteGrid extends StatefulWidget {
 }
 
 class _GraphiteGridState extends State<GraphiteGrid> {
-  List<MatrixNode> getListFromMatrix(Matrix mtx) {
+  List<MatrixNode?> getListFromMatrix(Matrix mtx) {
     return mtx.s.asMap().entries.fold([], (result, entry) {
       var y = entry.key, row = entry.value;
       result.addAll(row.asMap().entries.map((cellEntry) {

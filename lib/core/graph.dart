@@ -2,12 +2,11 @@ import 'package:graphite/core/graph_matrix.dart';
 import 'package:graphite/core/matrix.dart';
 import 'package:graphite/core/traverse_queue.dart';
 import 'package:graphite/core/typings.dart';
-import 'package:meta/meta.dart';
 
 const MaxIterations = 1000;
 
 class Graph extends GraphMatrix {
-  Graph({@required List<NodeInput> list}) : super(list: list);
+  Graph({required List<NodeInput> list}) : super(list: list);
 
   void handleSplitNode(NodeOutput item, State state, TraverseQueue levelQueue) {
     bool isInserted = processOrSkipNodeOnMatrix(item, state);

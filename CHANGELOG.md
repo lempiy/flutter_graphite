@@ -22,3 +22,8 @@
 
 * Core lib bug fixes
 
+## [0.3.0-alpha] - April 29, 2021
+
+* Initial null safety support
+
+

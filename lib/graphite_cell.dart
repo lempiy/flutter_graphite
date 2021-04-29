@@ -42,33 +42,33 @@ class GraphiteCell extends StatefulWidget {
   final MatrixNode node;
   final double cellPadding;
 
-  final NodeCellBuilder builder;
+  final NodeCellBuilder? builder;
 
-  final GestureNodeTapDownCallback onNodeTapDown;
+  final GestureNodeTapDownCallback? onNodeTapDown;
 
-  final GestureNodeTapUpCallback onNodeTapUp;
-  final GestureNodeLongPressStartCallback onNodeLongPressStart;
+  final GestureNodeTapUpCallback? onNodeTapUp;
+  final GestureNodeLongPressStartCallback? onNodeLongPressStart;
 
-  final GestureNodeLongPressEndCallback onNodeLongPressEnd;
-  final GestureNodeLongPressMoveUpdateCallback onNodeLongPressMoveUpdate;
+  final GestureNodeLongPressEndCallback? onNodeLongPressEnd;
+  final GestureNodeLongPressMoveUpdateCallback? onNodeLongPressMoveUpdate;
 
-  final GestureNodeForcePressStartCallback onNodeForcePressStart;
-  final GestureNodeForcePressEndCallback onNodeForcePressEnd;
+  final GestureNodeForcePressStartCallback? onNodeForcePressStart;
+  final GestureNodeForcePressEndCallback? onNodeForcePressEnd;
 
-  final GestureNodeForcePressPeakCallback onNodeForcePressPeak;
-  final GestureNodeForcePressUpdateCallback onNodeForcePressUpdate;
+  final GestureNodeForcePressPeakCallback? onNodeForcePressPeak;
+  final GestureNodeForcePressUpdateCallback? onNodeForcePressUpdate;
 
-  final GestureNodeDragStartCallback onNodePanStart;
-  final GestureNodeDragUpdateCallback onNodePanUpdate;
+  final GestureNodeDragStartCallback? onNodePanStart;
+  final GestureNodeDragUpdateCallback? onNodePanUpdate;
 
-  final GestureNodeDragDownCallback onNodePanDown;
-  final GestureNodeTapDownCallback onNodeSecondaryTapDown;
+  final GestureNodeDragDownCallback? onNodePanDown;
+  final GestureNodeTapDownCallback? onNodeSecondaryTapDown;
 
-  final GestureNodeTapUpCallback onNodeSecondaryTapUp;
+  final GestureNodeTapUpCallback? onNodeSecondaryTapUp;
 
   const GraphiteCell({
-    @required this.node,
-    @required this.cellPadding,
+    required this.node,
+    required this.cellPadding,
     this.onNodeTapDown,
     this.onNodeTapUp,
     this.onNodeLongPressStart,
@@ -100,51 +100,51 @@ class _GraphiteCellState extends State<GraphiteCell> {
             child: GestureDetector(
               behavior: HitTestBehavior.opaque,
               onTapDown: widget.onNodeTapDown != null
-                  ? (details) => widget.onNodeTapDown(details, node)
+                  ? (details) => widget.onNodeTapDown!(details, node)
                   : null,
               onTapUp: widget.onNodeTapUp != null
-                  ? (details) => widget.onNodeTapUp(details, node)
+                  ? (details) => widget.onNodeTapUp!(details, node)
                   : null,
               onLongPressStart: widget.onNodeLongPressStart != null
-                  ? (details) => widget.onNodeLongPressStart(details, node)
+                  ? (details) => widget.onNodeLongPressStart!(details, node)
                   : null,
               onLongPressEnd: widget.onNodeLongPressEnd != null
-                  ? (details) => widget.onNodeLongPressEnd(details, node)
+                  ? (details) => widget.onNodeLongPressEnd!(details, node)
                   : null,
               onLongPressMoveUpdate: widget.onNodeLongPressMoveUpdate != null
-                  ? (details) => widget.onNodeLongPressMoveUpdate(details, node)
+                  ? (details) => widget.onNodeLongPressMoveUpdate!(details, node)
                   : null,
               onForcePressStart: widget.onNodeForcePressStart != null
-                  ? (details) => widget.onNodeForcePressStart(details, node)
+                  ? (details) => widget.onNodeForcePressStart!(details, node)
                   : null,
               onForcePressEnd: widget.onNodeForcePressEnd != null
-                  ? (details) => widget.onNodeForcePressEnd(details, node)
+                  ? (details) => widget.onNodeForcePressEnd!(details, node)
                   : null,
               onForcePressPeak: widget.onNodeForcePressPeak != null
-                  ? (details) => widget.onNodeForcePressPeak(details, node)
+                  ? (details) => widget.onNodeForcePressPeak!(details, node)
                   : null,
               onForcePressUpdate: widget.onNodeForcePressUpdate != null
-                  ? (details) => widget.onNodeForcePressUpdate(details, node)
+                  ? (details) => widget.onNodeForcePressUpdate!(details, node)
                   : null,
               onPanStart: widget.onNodePanStart != null
-                  ? (details) => widget.onNodePanStart(details, node)
+                  ? (details) => widget.onNodePanStart!(details, node)
                   : null,
               onPanUpdate: widget.onNodePanUpdate != null
-                  ? (details) => widget.onNodePanUpdate(details, node)
+                  ? (details) => widget.onNodePanUpdate!(details, node)
                   : null,
               onPanDown: widget.onNodePanDown != null
-                  ? (details) => widget.onNodePanDown(details, node)
+                  ? (details) => widget.onNodePanDown!(details, node)
                   : null,
               onSecondaryTapDown: widget.onNodeSecondaryTapDown != null
-                  ? (details) => widget.onNodeSecondaryTapDown(details, node)
+                  ? (details) => widget.onNodeSecondaryTapDown!(details, node)
                   : null,
               onSecondaryTapUp: widget.onNodeSecondaryTapUp != null
-                  ? (details) => widget.onNodeSecondaryTapUp(details, node)
+                  ? (details) => widget.onNodeSecondaryTapUp!(details, node)
                   : null,
               child: Builder(builder: (ctx) {
                 return widget.builder == null
                     ? _defaultNodeCellBuilder(ctx, node)
-                    : widget.builder(ctx, node);
+                    : widget.builder!(ctx, node);
               }),
             ),
           );

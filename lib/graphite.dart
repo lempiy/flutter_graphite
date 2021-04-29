@@ -16,10 +16,10 @@ export 'package:graphite/graphite_edges_painter.dart';
 
 class DirectGraph extends StatefulWidget {
   const DirectGraph(
-      {@required this.list,
-      @required this.cellWidth,
-      @required this.cellPadding,
-      Key key,
+      {required this.list,
+      required this.cellWidth,
+      required this.cellPadding,
+      Key? key,
       this.onCanvasTap,
       this.onEdgeTapDown,
       this.edgePaintStyleForTouch,
@@ -72,57 +72,57 @@ class DirectGraph extends StatefulWidget {
   final double minScale;
 
   // Node
-  final NodeCellBuilder builder;
+  final NodeCellBuilder? builder;
 
-  final GestureNodeTapDownCallback onNodeTapDown;
+  final GestureNodeTapDownCallback? onNodeTapDown;
 
-  final GestureNodeTapUpCallback onNodeTapUp;
-  final GestureNodeLongPressStartCallback onNodeLongPressStart;
+  final GestureNodeTapUpCallback? onNodeTapUp;
+  final GestureNodeLongPressStartCallback? onNodeLongPressStart;
 
-  final GestureNodeLongPressEndCallback onNodeLongPressEnd;
-  final GestureNodeLongPressMoveUpdateCallback onNodeLongPressMoveUpdate;
+  final GestureNodeLongPressEndCallback? onNodeLongPressEnd;
+  final GestureNodeLongPressMoveUpdateCallback? onNodeLongPressMoveUpdate;
 
-  final GestureNodeForcePressStartCallback onNodeForcePressStart;
-  final GestureNodeForcePressEndCallback onNodeForcePressEnd;
+  final GestureNodeForcePressStartCallback? onNodeForcePressStart;
+  final GestureNodeForcePressEndCallback? onNodeForcePressEnd;
 
-  final GestureNodeForcePressPeakCallback onNodeForcePressPeak;
-  final GestureNodeForcePressUpdateCallback onNodeForcePressUpdate;
+  final GestureNodeForcePressPeakCallback? onNodeForcePressPeak;
+  final GestureNodeForcePressUpdateCallback? onNodeForcePressUpdate;
 
-  final GestureNodeDragStartCallback onNodePanStart;
-  final GestureNodeDragUpdateCallback onNodePanUpdate;
+  final GestureNodeDragStartCallback? onNodePanStart;
+  final GestureNodeDragUpdateCallback? onNodePanUpdate;
 
-  final GestureNodeDragDownCallback onNodePanDown;
-  final GestureNodeTapDownCallback onNodeSecondaryTapDown;
+  final GestureNodeDragDownCallback? onNodePanDown;
+  final GestureNodeTapDownCallback? onNodeSecondaryTapDown;
 
-  final GestureNodeTapUpCallback onNodeSecondaryTapUp;
+  final GestureNodeTapUpCallback? onNodeSecondaryTapUp;
 
   // Edge
-  final EdgePaintBuilder paintBuilder;
-  final EdgePathBuilder pathBuilder;
+  final EdgePaintBuilder? paintBuilder;
+  final EdgePathBuilder? pathBuilder;
 
-  final GestureTapCallback onCanvasTap;
-  final GestureEdgeTapDownCallback onEdgeTapDown;
-  final PaintingStyle edgePaintStyleForTouch;
+  final GestureTapCallback? onCanvasTap;
+  final GestureEdgeTapDownCallback? onEdgeTapDown;
+  final PaintingStyle? edgePaintStyleForTouch;
 
-  final GestureEdgeTapUpCallback onEdgeTapUp;
-  final GestureEdgeLongPressStartCallback onEdgeLongPressStart;
+  final GestureEdgeTapUpCallback? onEdgeTapUp;
+  final GestureEdgeLongPressStartCallback? onEdgeLongPressStart;
 
-  final GestureEdgeLongPressEndCallback onEdgeLongPressEnd;
-  final GestureEdgeLongPressMoveUpdateCallback onEdgeLongPressMoveUpdate;
+  final GestureEdgeLongPressEndCallback? onEdgeLongPressEnd;
+  final GestureEdgeLongPressMoveUpdateCallback? onEdgeLongPressMoveUpdate;
 
-  final GestureEdgeForcePressStartCallback onEdgeForcePressStart;
-  final GestureEdgeForcePressEndCallback onEdgeForcePressEnd;
+  final GestureEdgeForcePressStartCallback? onEdgeForcePressStart;
+  final GestureEdgeForcePressEndCallback? onEdgeForcePressEnd;
 
-  final GestureEdgeForcePressPeakCallback onEdgeForcePressPeak;
-  final GestureEdgeForcePressUpdateCallback onEdgeForcePressUpdate;
+  final GestureEdgeForcePressPeakCallback? onEdgeForcePressPeak;
+  final GestureEdgeForcePressUpdateCallback? onEdgeForcePressUpdate;
 
-  final GestureEdgeDragStartCallback onEdgePanStart;
-  final GestureEdgeDragUpdateCallback onEdgePanUpdate;
+  final GestureEdgeDragStartCallback? onEdgePanStart;
+  final GestureEdgeDragUpdateCallback? onEdgePanUpdate;
 
-  final GestureEdgeDragDownCallback onEdgePanDown;
-  final GestureEdgeTapDownCallback onEdgeSecondaryTapDown;
+  final GestureEdgeDragDownCallback? onEdgePanDown;
+  final GestureEdgeTapDownCallback? onEdgeSecondaryTapDown;
 
-  final GestureEdgeTapUpCallback onEdgeSecondaryTapUp;
+  final GestureEdgeTapUpCallback? onEdgeSecondaryTapUp;
   @override
   _DirectGraphState createState() => _DirectGraphState();
 }
@@ -132,7 +132,7 @@ class _DirectGraphState extends State<DirectGraph> {
     return Graph(list: list);
   }
 
-  List<NodeOutput> getListFromTMatrix(Matrix mtx) {
+  List<NodeOutput?> getListFromTMatrix(Matrix mtx) {
     return mtx.s.expand((v) => v).toList();
   }
 

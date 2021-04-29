@@ -4,9 +4,9 @@ class TraverseQueue {
   TraverseQueue() : this.s = [];
 
   add({
-    String incomeId,
-    TraverseQueue bufferQueue,
-    List<NodeInput> items,
+    String? incomeId,
+    TraverseQueue? bufferQueue,
+    required List<NodeInput> items,
   }) {
     items.forEach((itm) {
       var item = this.find((NodeOutput el) {
@@ -34,8 +34,9 @@ class TraverseQueue {
     });
   }
 
-  NodeOutput find(bool Function(NodeOutput) f) {
-    return this.s.firstWhere(f, orElse: () => null);
+  NodeOutput? find(bool Function(NodeOutput) f) {
+    int idx = this.s.indexWhere(f);
+    return idx != -1 ? this.s[idx] : null;
   }
 
   push(NodeOutput item) {
@@ -51,7 +52,7 @@ class TraverseQueue {
   }
 
   NodeOutput shift() {
-    if (this.s.length == 0) return null;
+    if (this.s.length == 0) throw 'Queue is empty';
     return this.s.removeAt(0);
   }
 
