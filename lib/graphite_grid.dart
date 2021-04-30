@@ -81,6 +81,7 @@ class _GraphiteGridState extends State<GraphiteGrid> {
       width: (widget.cellWidth * width).toDouble(),
       height: (widget.cellWidth * height).toDouble(),
       child: GridView.count(
+        padding: EdgeInsets.zero,
         crossAxisCount: width,
         childAspectRatio: 1,
         crossAxisSpacing: 0.0,
