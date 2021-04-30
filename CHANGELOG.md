@@ -26,4 +26,8 @@
 
 * Initial null safety support
 
+## [0.3.0-beta] - April 30, 2021
+
+* Fix edges shift bug as a result of grid view non-zero padding
+
 
