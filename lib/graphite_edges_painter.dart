@@ -1,4 +1,4 @@
-import 'package:flutter_arrow_path/flutter_arrow_path.dart';
+import 'package:arrow_path/arrow_path.dart';
 import 'package:flutter/widgets.dart';
 import 'package:graphite/core/matrix.dart';
 import 'package:graphite/core/typings.dart';

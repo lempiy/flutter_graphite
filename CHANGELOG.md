@@ -30,4 +30,9 @@
 
 * Fix edges shift bug as a result of grid view non-zero padding
 
+## [0.3.0] - May 13, 2021
+
+* Use arrow_path v2.0, skip own fork
+
+
 
