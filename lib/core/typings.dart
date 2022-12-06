@@ -26,23 +26,101 @@ List<NodeInput> nodeInputFromJson(String str) =>
 String nodeInputToJson(List<NodeInput> data) =>
     json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
+enum EdgeArrowType { none, one, both }
+
+class EdgeInput {
+  EdgeInput({
+    required this.outcome,
+    this.type = EdgeArrowType.one,
+  });
+
+  final String outcome;
+  final EdgeArrowType type;
+
+  factory EdgeInput.fromJson(Map<String, dynamic> json) => EdgeInput(
+        outcome: json["outcome"] == null ? null : json["outcome"],
+        type: json["type"] == null
+            ? EdgeArrowType.one
+            : EdgeInput.typeFromString(json["type"]),
+      );
+
+  static EdgeArrowType typeFromString(String typeAsString) {
+    switch (typeAsString) {
+      case "both":
+        return EdgeArrowType.both;
+      case "none":
+        return EdgeArrowType.none;
+      default:
+        return EdgeArrowType.one;
+    }
+  }
+
+  String typeToString() {
+    switch (type) {
+      case EdgeArrowType.both:
+        return "both";
+      case EdgeArrowType.none:
+        return "none";
+      default:
+        return "one";
+    }
+  }
+
+  Map<String, dynamic> toJson() => {
+        "outcome": outcome,
+        "type": typeToString(),
+      };
+}
+
+class NodeSize {
+  final double width;
+  final double height;
+
+  const NodeSize({
+    required this.width,
+    required this.height,
+  });
+
+  factory NodeSize.fromJson(Map<String, dynamic> json) => NodeSize(
+        width: json["width"] == null ? 0 : (json["width"] as double),
+        height: json["height"] == null ? 0 : (json["height"] as double),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "width": width,
+        "height": height,
+      };
+}
+
 class NodeInput {
   NodeInput({
     required this.id,
     required this.next,
+    this.size,
   });
 
+  final NodeSize? size;
   final String id;
-  final List<String> next;
+  final List<EdgeInput> next;
+
+  double? getWidth() {
+    return size == null ? 0 : size!.width;
+  }
+
+  double? getHeight() {
+    return size == null ? 0 : size!.height;
+  }
 
   factory NodeInput.fromJson(Map<String, dynamic> json) => NodeInput(
-        id: json["id"] == null ? null : json["id"],
-        next: List<String>.from(json["next"].map((x) => x)),
-      );
+      id: json["id"] == null ? null : json["id"],
+      next:
+          List<EdgeInput>.from(json["next"].map((x) => EdgeInput.fromJson(x))),
+      size: json["size"] == null ? null : NodeSize.fromJson(json["size"]));
 
   Map<String, dynamic> toJson() => {
         "id": id,
-        "next": List<dynamic>.from(next.map((x) => x)),
+        "next": List<dynamic>.from(next.map((x) => x.toJson())),
+        "size": size == null ? null : size!.toJson(),
       };
 }
 
@@ -58,7 +136,9 @@ class MatrixNode extends NodeOutput {
     required this.x,
     required this.y,
     required String id,
-    required List<String> next,
+    required List<EdgeInput> next,
+
+    NodeSize? size,
     AnchorType? anchorType,
     String? from,
     String? to,
@@ -71,6 +151,7 @@ class MatrixNode extends NodeOutput {
   }) : super(
           id: id,
           next: next,
+          size: size,
           anchorType: anchorType,
           from: from,
           to: to,
@@ -86,6 +167,7 @@ class MatrixNode extends NodeOutput {
     return MatrixNode(
       x: x,
       y: y,
+      size: nodeOutput.size,
       id: nodeOutput.id,
       next: nodeOutput.next,
       anchorType: nodeOutput.anchorType,
@@ -102,12 +184,22 @@ class MatrixNode extends NodeOutput {
 
   final int x;
   final int y;
+
+  NodeInput toInput() {
+    return NodeInput(id: id, next: next, size: size);
+  }
 }
 
-class NodeOutput extends NodeInput {
-  NodeOutput({
+class NodeItem extends NodeInput {
+  bool isAnchor;
+  List<String> passedIncomes = [];
+  List<String> renderIncomes = [];
+  int? childrenOnMatrix;
+
+  NodeItem({
     required String id,
-    required List<String> next,
+    required List<EdgeInput> next,
+    NodeSize? size,
     this.anchorType,
     this.from,
     this.to,
@@ -117,7 +209,27 @@ class NodeOutput extends NodeInput {
     this.renderIncomes = const [],
     this.childrenOnMatrix,
     this.anchorMargin,
-  }) : super(id: id, next: next);
+  }) : super(id: id, next: next, size: size);
+}
+
+class NodeOutput extends NodeInput {
+  NodeOutput({
+    required String id,
+    required List<EdgeInput> next,
+    NodeSize? size,
+    this.anchorType,
+    this.from,
+    this.to,
+    this.orientation,
+    this.isAnchor = false,
+    this.passedIncomes = const [],
+    this.renderIncomes = const [],
+    this.childrenOnMatrix,
+    this.anchorMargin,
+  }) : super(id: id, next: next, size: size);
+
+  Map<AnchorMargin, NodeOutput> anchors = {};
+  NodeOutput? node;
 
   AnchorType? anchorType;
   String? from;

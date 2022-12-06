@@ -1,5 +1,7 @@
+import 'dart:math';
+
 import 'package:arrow_path/arrow_path.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:graphite/core/matrix.dart';
 import 'package:graphite/core/typings.dart';
 import 'package:touchable/touchable.dart';
@@ -8,8 +10,9 @@ class Edge {
   final List<List<double>> points;
   final MatrixNode from;
   final MatrixNode to;
+  final EdgeArrowType arrowType;
 
-  Edge(this.points, this.from, this.to);
+  Edge(this.points, this.from, this.to, this.arrowType);
 }
 
 enum Direction { top, bottom, left, right }
@@ -29,76 +32,6 @@ Direction getVectorDirection(int x1, int y1, int x2, int y2) {
 double getMargin(AnchorMargin margin, double distance) {
   if (margin == AnchorMargin.none) return 0;
   return margin == AnchorMargin.start ? -distance : distance;
-}
-
-List<double> getCellCenter(
-    double cellSize,
-    double padding,
-    double cellX,
-    double cellY,
-    double distance,
-    AnchorMargin margin,
-    MatrixOrientation orientation) {
-  var outset = getMargin(margin, distance);
-  var x = cellX * cellSize + cellSize * 0.5;
-  var y = cellY * cellSize + cellSize * 0.5;
-  if (orientation == MatrixOrientation.Horizontal) {
-    x += outset;
-  } else {
-    y += outset;
-  }
-  return [x, y];
-}
-
-List<double> getCellEntry(
-    Direction direction,
-    double cellSize,
-    double padding,
-    double cellX,
-    double cellY,
-    double distance,
-    AnchorMargin margin,
-    MatrixOrientation orientation) {
-  switch (direction) {
-    case Direction.top:
-      var x = getCellCenter(
-          cellSize, padding, cellX, cellY, distance, margin, orientation)[0];
-      var y = cellY * cellSize + padding;
-      return [x, y];
-    case Direction.bottom:
-      var x = getCellCenter(
-          cellSize, padding, cellX, cellY, distance, margin, orientation)[0];
-      var y = cellY * cellSize + (cellSize - padding);
-      return [x, y];
-    case Direction.right:
-      var y = getCellCenter(
-          cellSize, padding, cellX, cellY, distance, margin, orientation)[1];
-      var x = cellX * cellSize + (cellSize - padding);
-      return [x, y];
-    case Direction.left:
-      var y = getCellCenter(
-          cellSize, padding, cellX, cellY, distance, margin, orientation)[1];
-      var x = cellX * cellSize + padding;
-      return [x, y];
-  }
-  return [cellX, cellY];
-}
-
-List<double> getPointWithResolver(
-    Direction direction,
-    double cellSize,
-    double padding,
-    double distance,
-    MatrixNode item,
-    AnchorMargin margin,
-    MatrixOrientation orientation) {
-  if (item.isAnchor) {
-    return getCellCenter(cellSize, padding, item.x.toDouble(),
-        item.y.toDouble(), distance, margin, orientation);
-  } else {
-    return getCellEntry(direction, cellSize, padding, item.x.toDouble(),
-        item.y.toDouble(), distance, margin, orientation);
-  }
 }
 
 Paint _defaultPaintBuilder(Edge edge) {
@@ -137,11 +70,14 @@ typedef GestureEdgeDragUpdateCallback = void Function(
 typedef GestureEdgeDragDownCallback = void Function(
     DragDownDetails details, Edge edge);
 
-typedef EdgePathBuilder = Path Function (List<List<double>> points);
+typedef EdgePathBuilder = Path Function(NodeInput income, NodeInput node,
+    List<List<double>> points, EdgeArrowType arrowType);
 
 class LinesPainter extends CustomPainter {
+  final Matrix matrix;
   final Map<String, MatrixNode> matrixMap;
-  final double cellWidth;
+  final double defaultCellWidth;
+  final double defaultCellHeight;
   final double cellPadding;
   final double contactEdgesDistance;
   final BuildContext context;
@@ -166,76 +102,85 @@ class LinesPainter extends CustomPainter {
   final GestureEdgeForcePressPeakCallback? onEdgeForcePressPeak;
   final GestureEdgeForcePressUpdateCallback? onEdgeForcePressUpdate;
 
-  final GestureEdgeDragStartCallback? onEdgePanStart;
-  final GestureEdgeDragUpdateCallback? onEdgePanUpdate;
-
-  final GestureEdgeDragDownCallback? onEdgePanDown;
   final GestureEdgeTapDownCallback? onEdgeSecondaryTapDown;
 
   final GestureEdgeTapUpCallback? onEdgeSecondaryTapUp;
 
-  Path _defaultEdgePathBuilder(List<List<double>> points) {
+  Path _defaultEdgePathBuilder(NodeInput from, NodeInput to,
+      List<List<double>> points, EdgeArrowType arrowType) {
     var path = Path();
     path.moveTo(points[0][0], points[0][1]);
     points.sublist(1).forEach((p) => path.lineTo(p[0], p[1]));
-    return ArrowPath.make(path: path, tipLength: tipLength, tipAngle: tipAngle);
+    if (arrowType == EdgeArrowType.none) {
+      return path;
+    }
+    return ArrowPath.make(
+        path: path,
+        isDoubleSided: arrowType == EdgeArrowType.both,
+        tipLength: tipLength,
+        tipAngle: tipAngle);
   }
 
   List<Edge> collectEdges(MatrixNode node, Map<String, MatrixNode> edges) {
     return node.renderIncomes.map((i) => edges[i]).fold([],
-            (List<Edge> acc, MatrixNode? income) {
-            List<List<double>> points = [];
-            var incomeNode = edges[income!.id];
-            var startNode = node;
-            var margins = getEdgeMargins(startNode, incomeNode!);
-            var nodeMargin = margins[0];
-            var incomeMargin = margins[1];
-            var direction = getVectorDirection(
-                startNode.x, startNode.y, incomeNode.x, incomeNode.y);
-            var directions = pointResolversMap[direction]!;
-            var from = directions[0], to = directions[1];
-            List<double> startPoint = getPointWithResolver(
-                from,
-                cellWidth,
-                cellPadding,
-                contactEdgesDistance,
-                startNode,
-                nodeMargin,
-                orientation);
-            points.add(startPoint);
-            while (incomeNode!.isAnchor) {
-              margins = getEdgeMargins(startNode, incomeNode);
-              nodeMargin = margins[0];
-              incomeMargin = margins[1];
-              direction = getVectorDirection(
-                  startNode.x, startNode.y, incomeNode.x, incomeNode.y);
-              directions = pointResolversMap[direction]!;
-              from = directions[0];
-              to = directions[1];
-              points.add(getPointWithResolver(to, cellWidth, cellPadding,
-                  contactEdgesDistance, incomeNode, incomeMargin, orientation));
-              startNode = incomeNode;
-              incomeNode = edges[incomeNode.renderIncomes[0]];
-            }
-            margins = getEdgeMargins(startNode, incomeNode);
-            nodeMargin = margins[0];
-            incomeMargin = margins[1];
-            direction = getVectorDirection(
-                startNode.x, startNode.y, incomeNode.x, incomeNode.y);
-            directions = pointResolversMap[direction]!;
-            from = directions[0];
-            to = directions[1];
-            points.add(getPointWithResolver(to, cellWidth, cellPadding,
-                contactEdgesDistance, incomeNode, incomeMargin, orientation));
-            acc.add(Edge(points, incomeNode, node));
-            return acc;
-          });
+        (List<Edge> acc, MatrixNode? income) {
+      List<List<double>> points = [];
+      var incomeNode = edges[income!.id];
+      var startNode = node;
+      var margins = getEdgeMargins(startNode, incomeNode!);
+      var nodeMargin = margins[0];
+      var incomeMargin = margins[1];
+      var direction = getVectorDirection(
+          startNode.x, startNode.y, incomeNode.x, incomeNode.y);
+      var directions = pointResolversMap[direction]!;
+      var from = directions[0], to = directions[1];
+      final defaultCellSize =
+          NodeSize(width: defaultCellWidth, height: defaultCellHeight);
+      List<double> startPoint = getPointWithResolver(
+          from,
+          defaultCellSize,
+          cellPadding,
+          contactEdgesDistance,
+          startNode,
+          nodeMargin,
+          orientation);
+      points.add(startPoint);
+      while (incomeNode!.isAnchor) {
+        margins = getEdgeMargins(startNode, incomeNode);
+        nodeMargin = margins[0];
+        incomeMargin = margins[1];
+        direction = getVectorDirection(
+            startNode.x, startNode.y, incomeNode.x, incomeNode.y);
+        directions = pointResolversMap[direction]!;
+        from = directions[0];
+        to = directions[1];
+        points.add(getPointWithResolver(to, defaultCellSize, cellPadding,
+            contactEdgesDistance, incomeNode, incomeMargin, orientation));
+        startNode = incomeNode;
+        incomeNode = edges[incomeNode.renderIncomes[0]];
+      }
+      margins = getEdgeMargins(startNode, incomeNode);
+      nodeMargin = margins[0];
+      incomeMargin = margins[1];
+      direction = getVectorDirection(
+          startNode.x, startNode.y, incomeNode.x, incomeNode.y);
+      directions = pointResolversMap[direction]!;
+      from = directions[0];
+      to = directions[1];
+      points.add(getPointWithResolver(to, defaultCellSize, cellPadding,
+          contactEdgesDistance, incomeNode, incomeMargin, orientation));
+      final edgeInput = incomeNode.next.firstWhere((e) => e.outcome == node.id);
+      acc.add(Edge(points, incomeNode, node, edgeInput.type));
+      return acc;
+    });
   }
 
   const LinesPainter(
     this.context,
+    this.matrix,
     this.matrixMap,
-    this.cellWidth,
+    this.defaultCellWidth,
+    this.defaultCellHeight,
     this.contactEdgesDistance,
     this.orientation, {
     required this.cellPadding,
@@ -251,9 +196,6 @@ class LinesPainter extends CustomPainter {
     this.onEdgeForcePressEnd,
     this.onEdgeForcePressPeak,
     this.onEdgeForcePressUpdate,
-    this.onEdgePanStart,
-    this.onEdgePanUpdate,
-    this.onEdgePanDown,
     this.onEdgeSecondaryTapDown,
     this.onEdgeSecondaryTapUp,
     this.paintBuilder,
@@ -263,6 +205,7 @@ class LinesPainter extends CustomPainter {
   @override
   void paint(Canvas c, Size size) {
     var canvas = TouchyCanvas(context, c);
+
     List<Edge> _state = [];
     matrixMap.forEach((key, value) {
       if (value.isAnchor) return;
@@ -270,61 +213,199 @@ class LinesPainter extends CustomPainter {
     });
     _state.forEach((e) {
       var points = e.points.reversed.toList();
-      var path = pathBuilder == null ? _defaultEdgePathBuilder(points) : pathBuilder!(points);
+      var path = pathBuilder == null
+          ? _defaultEdgePathBuilder(
+              e.from.toInput(), e.to.toInput(), points, e.arrowType)
+          : pathBuilder!(e.from.toInput(), e.to.toInput(), points, e.arrowType);
       final paint =
-        paintBuilder == null ? _defaultPaintBuilder(e) : paintBuilder!(e);
+          paintBuilder == null ? _defaultPaintBuilder(e) : paintBuilder!(e);
+
       canvas.drawPath(
         path,
         paint,
-        paintStyleForTouch: edgePaintStyleForTouch,
-        onTapDown: onEdgeTapDown != null
-            ? (details) => onEdgeTapDown!(details, e)
-            : null,
-        onTapUp:
-            onEdgeTapUp != null ? (details) => onEdgeTapUp!(details, e) : null,
-        onLongPressStart: onEdgeLongPressStart != null
-            ? (details) => onEdgeLongPressStart!(details, e)
-            : null,
-        onLongPressEnd: onEdgeLongPressEnd != null
-            ? (details) => onEdgeLongPressEnd!(details, e)
-            : null,
-        onLongPressMoveUpdate: onEdgeLongPressMoveUpdate != null
-            ? (details) => onEdgeLongPressMoveUpdate!(details, e)
-            : null,
-        onForcePressStart: onEdgeForcePressStart != null
-            ? (details) => onEdgeForcePressStart!(details, e)
-            : null,
-        onForcePressEnd: onEdgeForcePressEnd != null
-            ? (details) => onEdgeForcePressEnd!(details, e)
-            : null,
-        onForcePressPeak: onEdgeForcePressPeak != null
-            ? (details) => onEdgeForcePressPeak!(details, e)
-            : null,
-        onForcePressUpdate: onEdgeForcePressUpdate != null
-            ? (details) => onEdgeForcePressUpdate!(details, e)
-            : null,
-        onPanStart: onEdgePanStart != null
-            ? (details) => onEdgePanStart!(details, e)
-            : null,
-        onPanUpdate: onEdgePanUpdate != null
-            ? (details) => onEdgePanUpdate!(details, e)
-            : null,
-        onPanDown: onEdgePanDown != null
-            ? (details) => onEdgePanDown!(details, e)
-            : null,
-        onSecondaryTapDown: onEdgeSecondaryTapDown != null
-            ? (details) => onEdgeSecondaryTapDown!(details, e)
-            : null,
-        onSecondaryTapUp: onEdgeSecondaryTapUp != null
-            ? (details) => onEdgeSecondaryTapUp!(details, e)
-            : null,
+        paintStyleForTouch: PaintingStyle.fill,
       );
+      // add transparent wider lines on top to track gestures
+      for (int i = 1; i < points.length; i++) {
+        var p = Paint()
+          ..color = Colors.transparent
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = paint.strokeWidth * 3;
+        canvas.drawLine(Offset(points[i - 1][0], points[i - 1][1]),
+            Offset(points[i][0], points[i][1]), p,
+            onTapDown: onEdgeTapDown != null
+                ? (details) => onEdgeTapDown!(details, e)
+                : null,
+            onTapUp: onEdgeTapUp != null
+                ? (details) => onEdgeTapUp!(details, e)
+                : null,
+            onLongPressStart: onEdgeLongPressStart != null
+                ? (details) => onEdgeLongPressStart!(details, e)
+                : null,
+            onLongPressEnd: onEdgeLongPressEnd != null
+                ? (details) => onEdgeLongPressEnd!(details, e)
+                : null,
+            onLongPressMoveUpdate: onEdgeLongPressMoveUpdate != null
+                ? (details) => onEdgeLongPressMoveUpdate!(details, e)
+                : null,
+            onForcePressStart: onEdgeForcePressStart != null
+                ? (details) => onEdgeForcePressStart!(details, e)
+                : null,
+            onForcePressEnd: onEdgeForcePressEnd != null
+                ? (details) => onEdgeForcePressEnd!(details, e)
+                : null,
+            onForcePressPeak: onEdgeForcePressPeak != null
+                ? (details) => onEdgeForcePressPeak!(details, e)
+                : null,
+            onForcePressUpdate: onEdgeForcePressUpdate != null
+                ? (details) => onEdgeForcePressUpdate!(details, e)
+                : null,
+            onSecondaryTapDown: onEdgeSecondaryTapDown != null
+                ? (details) => onEdgeSecondaryTapDown!(details, e)
+                : null,
+            onSecondaryTapUp: onEdgeSecondaryTapUp != null
+                ? (details) => onEdgeSecondaryTapUp!(details, e)
+                : null);
+      }
     });
   }
 
   @override
   bool shouldRepaint(LinesPainter oldDelegate) {
     return true;
+  }
+
+  double _getHighestHeightInARow(int y) {
+    return matrix.s[y].fold(
+        0,
+        (acc, node) => max(
+            acc,
+            (node == null || node.size == null)
+                ? defaultCellHeight
+                : node.size!.height));
+  }
+
+  double _getWidestWidthInAColumn(int x) {
+    double acc = 0;
+    for (var y = 0; y < matrix.height(); y++) {
+      final node = matrix.getByCoords(x, y);
+      acc = max(
+          acc,
+          (node == null || node.size == null)
+              ? defaultCellWidth
+              : node.size!.width);
+    }
+    return acc;
+  }
+
+  // exclusive
+  double _getWidthToPoint(int x, int y, double padding) {
+    double distance = 0;
+    int from = 0;
+    while (from != x) {
+      double w = _getWidestWidthInAColumn(from);
+      distance += (w + padding * 2);
+      from++;
+    }
+    return distance;
+  }
+
+  // exclusive
+  double _getHeightToPoint(int x, int y, double padding) {
+    double distance = 0;
+    int from = 0;
+    while (from != y) {
+      double h = _getHighestHeightInARow(from);
+      distance += (h + padding * 2);
+      from++;
+    }
+    return distance;
+  }
+
+  List<double> getCellCenter(
+      NodeSize defaultCellSize,
+      double padding,
+      double cellX,
+      double cellY,
+      double distance,
+      AnchorMargin margin,
+      MatrixOrientation orientation) {
+    double outset = getMargin(margin, distance);
+    final cellWidth = _getWidestWidthInAColumn(cellX.floor());
+    final cellHeight = _getHighestHeightInARow(cellY.floor());
+
+    double x = _getWidthToPoint(cellX.floor(), cellY.floor(), padding) +
+        (cellWidth + padding * 2) * 0.5;
+    double y = _getHeightToPoint(cellX.floor(), cellY.floor(), padding) +
+        (cellHeight + padding * 2) * 0.5;
+    if (orientation == MatrixOrientation.Horizontal) {
+      x += outset;
+    } else {
+      y += outset;
+    }
+    return [x, y];
+  }
+
+  List<double> getCellEntry(
+      MatrixNode node,
+      Direction direction,
+      NodeSize defaultCellSize,
+      double padding,
+      double cellX,
+      double cellY,
+      double distance,
+      AnchorMargin margin,
+      MatrixOrientation orientation) {
+    final w = _getWidestWidthInAColumn(cellX.floor());
+    final h = _getHighestHeightInARow(cellY.floor());
+    final cw = node.size?.width ?? defaultCellSize.width;
+    final ch = node.size?.height ?? defaultCellSize.height;
+    final cellHorizontalPadding = (cw != w ? padding + (w - cw) * .5 : padding);
+    final cellVerticalPadding = (ch != h ? padding + (h - ch) * .5 : padding);
+
+    switch (direction) {
+      case Direction.top:
+        final x = getCellCenter(defaultCellSize, padding, cellX, cellY,
+            distance, margin, orientation)[0];
+        final y = _getHeightToPoint(cellX.floor(), cellY.floor(), padding) +
+            cellVerticalPadding;
+        return [x, y];
+      case Direction.bottom:
+        final x = getCellCenter(defaultCellSize, padding, cellX, cellY,
+            distance, margin, orientation)[0];
+        final y = _getHeightToPoint(cellX.floor(), cellY.floor(), padding) +
+            (ch + cellVerticalPadding);
+        return [x, y];
+      case Direction.right:
+        final y = getCellCenter(defaultCellSize, padding, cellX, cellY,
+            distance, margin, orientation)[1];
+        final x = _getWidthToPoint(cellX.floor(), cellY.floor(), padding) +
+            (cw + cellHorizontalPadding);
+        return [x, y];
+      case Direction.left:
+        final y = getCellCenter(defaultCellSize, padding, cellX, cellY,
+            distance, margin, orientation)[1];
+        final x = _getWidthToPoint(cellX.floor(), cellY.floor(), padding) +
+            cellHorizontalPadding;
+        return [x, y];
+    }
+  }
+
+  List<double> getPointWithResolver(
+      Direction direction,
+      NodeSize defaultCellSize,
+      double padding,
+      double distance,
+      MatrixNode item,
+      AnchorMargin margin,
+      MatrixOrientation orientation) {
+    if (item.isAnchor) {
+      return getCellCenter(defaultCellSize, padding, item.x.toDouble(),
+          item.y.toDouble(), distance, margin, orientation);
+    } else {
+      return getCellEntry(item, direction, defaultCellSize, padding,
+          item.x.toDouble(), item.y.toDouble(), distance, margin, orientation);
+    }
   }
 }
 

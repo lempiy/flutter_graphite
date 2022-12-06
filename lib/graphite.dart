@@ -15,14 +15,16 @@ export 'package:graphite/graphite_cell.dart';
 export 'package:graphite/graphite_edges_painter.dart';
 
 class DirectGraph extends StatefulWidget {
-  const DirectGraph(
+  DirectGraph(
       {required this.list,
-      required this.cellWidth,
+      required this.defaultCellWidth,
+      required this.defaultCellHeight,
       required this.cellPadding,
-      Key? key,
+      this.centered = false,
+      this.overlayBuilder,
+      super.key,
       this.onCanvasTap,
       this.onEdgeTapDown,
-      this.edgePaintStyleForTouch,
       this.onEdgeTapUp,
       this.onEdgeLongPressStart,
       this.onEdgeLongPressEnd,
@@ -31,9 +33,6 @@ class DirectGraph extends StatefulWidget {
       this.onEdgeForcePressEnd,
       this.onEdgeForcePressPeak,
       this.onEdgeForcePressUpdate,
-      this.onEdgePanStart,
-      this.onEdgePanUpdate,
-      this.onEdgePanDown,
       this.onEdgeSecondaryTapDown,
       this.onEdgeSecondaryTapUp,
       this.paintBuilder,
@@ -58,12 +57,13 @@ class DirectGraph extends StatefulWidget {
       this.tipLength = 10.0,
       this.maxScale = 3.5,
       this.minScale = 0.25,
-      this.pathBuilder})
-      : super(key: key);
+      this.pathBuilder});
 
-  final double cellWidth;
+  final double defaultCellWidth;
+  final double defaultCellHeight;
   final double cellPadding;
   final List<NodeInput> list;
+  final bool centered;
   final double contactEdgesDistance;
   final MatrixOrientation orientation;
   final double tipLength;
@@ -73,6 +73,9 @@ class DirectGraph extends StatefulWidget {
 
   // Node
   final NodeCellBuilder? builder;
+
+  // Overlay
+  final OverlayBuilder? overlayBuilder;
 
   final GestureNodeTapDownCallback? onNodeTapDown;
 
@@ -102,7 +105,6 @@ class DirectGraph extends StatefulWidget {
 
   final GestureTapCallback? onCanvasTap;
   final GestureEdgeTapDownCallback? onEdgeTapDown;
-  final PaintingStyle? edgePaintStyleForTouch;
 
   final GestureEdgeTapUpCallback? onEdgeTapUp;
   final GestureEdgeLongPressStartCallback? onEdgeLongPressStart;
@@ -116,20 +118,15 @@ class DirectGraph extends StatefulWidget {
   final GestureEdgeForcePressPeakCallback? onEdgeForcePressPeak;
   final GestureEdgeForcePressUpdateCallback? onEdgeForcePressUpdate;
 
-  final GestureEdgeDragStartCallback? onEdgePanStart;
-  final GestureEdgeDragUpdateCallback? onEdgePanUpdate;
-
-  final GestureEdgeDragDownCallback? onEdgePanDown;
   final GestureEdgeTapDownCallback? onEdgeSecondaryTapDown;
-
   final GestureEdgeTapUpCallback? onEdgeSecondaryTapUp;
   @override
   _DirectGraphState createState() => _DirectGraphState();
 }
 
 class _DirectGraphState extends State<DirectGraph> {
-  Graph toGraph(List<NodeInput> list) {
-    return Graph(list: list);
+  Graph toGraph(List<NodeInput> list, bool centered) {
+    return Graph(list: list, centred: centered);
   }
 
   List<NodeOutput?> getListFromTMatrix(Matrix mtx) {
@@ -139,7 +136,9 @@ class _DirectGraphState extends State<DirectGraph> {
   Widget getRoot(BuildContext context, Matrix mtx) {
     return GraphiteRoot(
       mtx: mtx,
-      cellWidth: widget.cellWidth,
+      defaultCellWidth: widget.defaultCellWidth,
+      defaultCellHeight: widget.defaultCellHeight,
+      overlayBuilder: widget.overlayBuilder,
       cellPadding: widget.cellPadding,
       contactEdgesDistance: widget.contactEdgesDistance,
       orientation: widget.orientation,
@@ -163,7 +162,6 @@ class _DirectGraphState extends State<DirectGraph> {
       onNodeSecondaryTapUp: widget.onNodeSecondaryTapUp,
       paintBuilder: widget.paintBuilder,
       onEdgeTapDown: widget.onEdgeTapDown,
-      edgePaintStyleForTouch: widget.edgePaintStyleForTouch,
       onEdgeTapUp: widget.onEdgeTapUp,
       onEdgeLongPressStart: widget.onEdgeLongPressStart,
       onEdgeLongPressEnd: widget.onEdgeLongPressEnd,
@@ -172,9 +170,6 @@ class _DirectGraphState extends State<DirectGraph> {
       onEdgeForcePressEnd: widget.onEdgeForcePressEnd,
       onEdgeForcePressPeak: widget.onEdgeForcePressPeak,
       onEdgeForcePressUpdate: widget.onEdgeForcePressUpdate,
-      onEdgePanStart: widget.onEdgePanStart,
-      onEdgePanUpdate: widget.onEdgePanUpdate,
-      onEdgePanDown: widget.onEdgePanDown,
       onEdgeSecondaryTapDown: widget.onEdgeSecondaryTapDown,
       onEdgeSecondaryTapUp: widget.onEdgeSecondaryTapUp,
       minScale: widget.minScale,
@@ -185,7 +180,7 @@ class _DirectGraphState extends State<DirectGraph> {
 
   @override
   Widget build(BuildContext context) {
-    var graph = this.toGraph(widget.list);
+    var graph = this.toGraph(widget.list, widget.centered);
     var mtx = graph.traverse();
     if (widget.orientation == MatrixOrientation.Vertical) {
       mtx = mtx.rotate();

@@ -1,13 +1,13 @@
 import 'package:flutter/widgets.dart';
 import 'package:graphite/core/matrix.dart';
 import 'package:graphite/graphite_cell.dart';
-import 'package:graphite/graphite_edges.dart';
+import 'package:graphite/graphite_canvas.dart';
 import 'package:graphite/graphite_edges_painter.dart';
-import 'package:graphite/graphite_grid.dart';
 
 class GraphiteRoot extends StatefulWidget {
   final Matrix mtx;
-  final double cellWidth;
+  final double defaultCellWidth;
+  final double defaultCellHeight;
   final double cellPadding;
   final double contactEdgesDistance;
   final MatrixOrientation orientation;
@@ -18,6 +18,9 @@ class GraphiteRoot extends StatefulWidget {
 
   // Node
   final NodeCellBuilder? builder;
+
+  // Overlay
+  final OverlayBuilder? overlayBuilder;
 
   final GestureNodeTapDownCallback? onNodeTapDown;
 
@@ -47,7 +50,6 @@ class GraphiteRoot extends StatefulWidget {
 
   final GestureTapCallback? onCanvasTap;
   final GestureEdgeTapDownCallback? onEdgeTapDown;
-  final PaintingStyle? edgePaintStyleForTouch;
 
   final GestureEdgeTapUpCallback? onEdgeTapUp;
   final GestureEdgeLongPressStartCallback? onEdgeLongPressStart;
@@ -61,17 +63,14 @@ class GraphiteRoot extends StatefulWidget {
   final GestureEdgeForcePressPeakCallback? onEdgeForcePressPeak;
   final GestureEdgeForcePressUpdateCallback? onEdgeForcePressUpdate;
 
-  final GestureEdgeDragStartCallback? onEdgePanStart;
-  final GestureEdgeDragUpdateCallback? onEdgePanUpdate;
-
-  final GestureEdgeDragDownCallback? onEdgePanDown;
   final GestureEdgeTapDownCallback? onEdgeSecondaryTapDown;
 
   final GestureEdgeTapUpCallback? onEdgeSecondaryTapUp;
 
   GraphiteRoot({
     required this.mtx,
-    required this.cellWidth,
+    required this.defaultCellWidth,
+    required this.defaultCellHeight,
     required this.cellPadding,
     required this.tipLength,
     required this.tipAngle,
@@ -79,8 +78,8 @@ class GraphiteRoot extends StatefulWidget {
     required this.minScale,
     required this.orientation,
     required this.contactEdgesDistance,
+    this.overlayBuilder,
     this.onEdgeTapDown,
-    this.edgePaintStyleForTouch,
     this.onEdgeTapUp,
     this.onCanvasTap,
     this.onEdgeLongPressStart,
@@ -90,9 +89,6 @@ class GraphiteRoot extends StatefulWidget {
     this.onEdgeForcePressEnd,
     this.onEdgeForcePressPeak,
     this.onEdgeForcePressUpdate,
-    this.onEdgePanStart,
-    this.onEdgePanUpdate,
-    this.onEdgePanDown,
     this.onEdgeSecondaryTapDown,
     this.onEdgeSecondaryTapUp,
     this.paintBuilder,
@@ -120,53 +116,46 @@ class GraphiteRoot extends StatefulWidget {
 class _GraphiteRootState extends State<GraphiteRoot> {
   @override
   Widget build(BuildContext context) {
-    return GraphiteEdges(
-      child: GraphiteGrid(
-          matrix: widget.mtx,
-          cellWidth: widget.cellWidth,
-          cellPadding: widget.cellPadding,
-          builder: widget.builder,
-          onNodeTapDown: widget.onNodeTapDown,
-          onNodeTapUp: widget.onNodeTapUp,
-          onNodeLongPressStart: widget.onNodeLongPressStart,
-          onNodeLongPressEnd: widget.onNodeLongPressEnd,
-          onNodeLongPressMoveUpdate: widget.onNodeLongPressMoveUpdate,
-          onNodeForcePressStart: widget.onNodeForcePressStart,
-          onNodeForcePressEnd: widget.onNodeForcePressEnd,
-          onNodeForcePressPeak: widget.onNodeForcePressPeak,
-          onNodeForcePressUpdate: widget.onNodeForcePressUpdate,
-          onNodePanStart: widget.onNodePanStart,
-          onNodePanUpdate: widget.onNodePanUpdate,
-          onNodePanDown: widget.onNodePanDown,
-          onNodeSecondaryTapDown: widget.onNodeSecondaryTapDown,
-          onNodeSecondaryTapUp: widget.onNodeSecondaryTapUp),
-      matrix: widget.mtx,
-      cellWidth: widget.cellWidth,
-      cellPadding: widget.cellPadding,
-      contactEdgesDistance: widget.contactEdgesDistance,
-      orientation: widget.orientation,
-      paintBuilder: widget.paintBuilder,
-      onCanvasTap: widget.onCanvasTap,
-      onEdgeTapDown: widget.onEdgeTapDown,
-      edgePaintStyleForTouch: widget.edgePaintStyleForTouch,
-      onEdgeTapUp: widget.onEdgeTapUp,
-      onEdgeLongPressStart: widget.onEdgeLongPressStart,
-      onEdgeLongPressEnd: widget.onEdgeLongPressEnd,
-      onEdgeLongPressMoveUpdate: widget.onEdgeLongPressMoveUpdate,
-      onEdgeForcePressStart: widget.onEdgeForcePressStart,
-      onEdgeForcePressEnd: widget.onEdgeForcePressEnd,
-      onEdgeForcePressPeak: widget.onEdgeForcePressPeak,
-      onEdgeForcePressUpdate: widget.onEdgeForcePressUpdate,
-      onEdgePanStart: widget.onEdgePanStart,
-      onEdgePanUpdate: widget.onEdgePanUpdate,
-      onEdgePanDown: widget.onEdgePanDown,
-      onEdgeSecondaryTapDown: widget.onEdgeSecondaryTapDown,
-      onEdgeSecondaryTapUp: widget.onEdgeSecondaryTapUp,
-      tipAngle: widget.tipAngle,
-      tipLength: widget.tipLength,
-      maxScale: widget.maxScale,
-      minScale: widget.minScale,
-      pathBuilder: widget.pathBuilder,
-    );
+    return GraphiteCanvas(
+        matrix: widget.mtx,
+        defaultCellWidth: widget.defaultCellWidth,
+        defaultCellHeight: widget.defaultCellHeight,
+        overlayBuilder: widget.overlayBuilder,
+        cellPadding: widget.cellPadding,
+        contactEdgesDistance: widget.contactEdgesDistance,
+        orientation: widget.orientation,
+        paintBuilder: widget.paintBuilder,
+        onCanvasTap: widget.onCanvasTap,
+        onEdgeTapDown: widget.onEdgeTapDown,
+        onEdgeTapUp: widget.onEdgeTapUp,
+        onEdgeLongPressStart: widget.onEdgeLongPressStart,
+        onEdgeLongPressEnd: widget.onEdgeLongPressEnd,
+        onEdgeLongPressMoveUpdate: widget.onEdgeLongPressMoveUpdate,
+        onEdgeForcePressStart: widget.onEdgeForcePressStart,
+        onEdgeForcePressEnd: widget.onEdgeForcePressEnd,
+        onEdgeForcePressPeak: widget.onEdgeForcePressPeak,
+        onEdgeForcePressUpdate: widget.onEdgeForcePressUpdate,
+        onEdgeSecondaryTapDown: widget.onEdgeSecondaryTapDown,
+        onEdgeSecondaryTapUp: widget.onEdgeSecondaryTapUp,
+        tipAngle: widget.tipAngle,
+        tipLength: widget.tipLength,
+        maxScale: widget.maxScale,
+        minScale: widget.minScale,
+        pathBuilder: widget.pathBuilder,
+        builder: widget.builder,
+        onNodeTapDown: widget.onNodeTapDown,
+        onNodeTapUp: widget.onNodeTapUp,
+        onNodeLongPressStart: widget.onNodeLongPressStart,
+        onNodeLongPressEnd: widget.onNodeLongPressEnd,
+        onNodeLongPressMoveUpdate: widget.onNodeLongPressMoveUpdate,
+        onNodeForcePressStart: widget.onNodeForcePressStart,
+        onNodeForcePressEnd: widget.onNodeForcePressEnd,
+        onNodeForcePressPeak: widget.onNodeForcePressPeak,
+        onNodeForcePressUpdate: widget.onNodeForcePressUpdate,
+        onNodePanStart: widget.onNodePanStart,
+        onNodePanUpdate: widget.onNodePanUpdate,
+        onNodePanDown: widget.onNodePanDown,
+        onNodeSecondaryTapDown: widget.onNodeSecondaryTapDown,
+        onNodeSecondaryTapUp: widget.onNodeSecondaryTapUp);
   }
 }

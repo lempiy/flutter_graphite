@@ -6,7 +6,8 @@ import 'package:graphite/core/typings.dart';
 const MaxIterations = 1000;
 
 class Graph extends GraphMatrix {
-  Graph({required List<NodeInput> list}) : super(list: list);
+  Graph({required List<NodeInput> list, required bool centred})
+      : super(list: list, centred: centred);
 
   void handleSplitNode(NodeOutput item, State state, TraverseQueue levelQueue) {
     bool isInserted = processOrSkipNodeOnMatrix(item, state);
@@ -119,7 +120,7 @@ class Graph extends GraphMatrix {
   }
 }
 
-Matrix listToMatrix(List<NodeInput> list) {
-  Graph g = Graph(list: list);
+Matrix listToMatrix(List<NodeInput> list, bool centred) {
+  Graph g = Graph(list: list, centred: centred);
   return g.traverse();
 }

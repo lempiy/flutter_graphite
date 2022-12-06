@@ -15,7 +15,8 @@ void addUniqueRelation(Map<String, List<String>> rm, String key, String value) {
 }
 
 class GraphBasic {
-  GraphBasic({required List<NodeInput> list}) {
+  GraphBasic({required List<NodeInput> list, required bool centred}) {
+    this.centred = centred;
     this.list = list;
     this.nodesMap = this.list.fold(Map(), (m, node) {
       if (m.containsKey(node.id)) {
@@ -46,19 +47,19 @@ class GraphBasic {
     }
     branchSet.add(node.id);
     totalSet.add(node.id);
-    node.next.forEach((outcomeId) {
-      if (this.isLoopEdge(node.id, outcomeId)) {
+    node.next.forEach((out) {
+      if (this.isLoopEdge(node.id, out.outcome)) {
         return;
       }
-      if (branchSet.contains((outcomeId))) {
-        addUniqueRelation(this.loopsByNodeIdMap, node.id, outcomeId);
+      if (branchSet.contains((out.outcome))) {
+        addUniqueRelation(this.loopsByNodeIdMap, node.id, out.outcome);
         return;
       }
-      addUniqueRelation(incomesByNodeIdMap, outcomeId, node.id);
-      addUniqueRelation(outcomesByNodeIdMap, node.id, outcomeId);
-      final nextNode = this.nodesMap[outcomeId];
+      addUniqueRelation(incomesByNodeIdMap, out.outcome, node.id);
+      addUniqueRelation(outcomesByNodeIdMap, node.id, out.outcome);
+      final nextNode = this.nodesMap[out.outcome];
       if (nextNode == null) {
-        throw 'node $outcomeId not found';
+        throw 'node ${out.outcome} not found';
       }
       totalSet =
           this.traverseVertically(nextNode, Set.from(branchSet), totalSet);
@@ -130,4 +131,5 @@ class GraphBasic {
   Map<String, List<String>> incomesByNodeIdMap = {};
   Map<String, List<String>> outcomesByNodeIdMap = {};
   Map<String, List<String>> loopsByNodeIdMap = {};
+  bool centred = false;
 }
