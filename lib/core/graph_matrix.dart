@@ -18,6 +18,10 @@ class State {
   });
 }
 
+class HorizontalCollisionCheck {
+  int? untilX;
+}
+
 class GraphMatrix extends GraphBasic {
   GraphMatrix({required List<NodeInput> list, required bool centred})
       : super(list: list, centred: centred);
@@ -26,10 +30,12 @@ class GraphMatrix extends GraphBasic {
     return item.passedIncomes.length != incomes(item.id).length;
   }
 
-  void insertOrSkipNodeOnMatrix(
-      NodeOutput item, State state, bool checkCollision) {
+  void insertNodeOnMatrix(NodeOutput item, State state, bool checkCollision) {
     var mtx = state.mtx;
-    if (checkCollision && mtx.hasHorizontalCollision(state.x, state.y)) {
+    // check occupied here
+    if (checkCollision &&
+        (mtx.hasHorizontalCollision(state.x, state.y) ||
+            mtx.cellBusyForItem(item, state.x, state.y))) {
       mtx.insertRowBefore(state.y);
     }
     mtx.insert(state.x, state.y, item);
@@ -99,8 +105,11 @@ class GraphMatrix extends GraphBasic {
       queue.push(item);
       return false;
     }
-    this.insertOrSkipNodeOnMatrix(item, state, false);
+    this.insertNodeOnMatrix(item, state, false);
+
     if (loopNodes.length != 0) {
+      loopNodes
+          .sort((a, b) => a.isSelfLoop ? -1 : 1); // process self-loop first
       insertLoopEdges(item, state, loopNodes);
     }
     return true;
@@ -120,7 +129,9 @@ class GraphMatrix extends GraphBasic {
       });
       if (coords?.length != 2)
         throw "loop target $incomeId not found on matrix";
-      NodeOutput? node = mtx.getByCoords(coords![0], coords[1]);
+      MatrixCell? cell = mtx.getByCoords(coords![0], coords[1]);
+      if (cell == null) throw "loop target cell $incomeId not found on matrix";
+      NodeOutput? node = cell.getById(incomeId);
       if (node == null) throw "loop target node $incomeId not found on matrix";
       return LoopNode(
           id: incomeId,
@@ -149,7 +160,7 @@ class GraphMatrix extends GraphBasic {
         state.y = initialY;
         String selfLoopId = "$id-self";
         renderIncomeId = selfLoopId;
-        insertOrSkipNodeOnMatrix(
+        insertNodeOnMatrix(
             NodeOutput(
               id: selfLoopId,
               next: [EdgeInput(outcome: id)],
@@ -161,16 +172,23 @@ class GraphMatrix extends GraphBasic {
               isAnchor: true,
               renderIncomes: [node.id],
               passedIncomes: [item.id],
-              childrenOnMatrix: 0,
+              childrenOnMatrix: 1,
             ),
             state,
             false);
       }
+      state.y = min(income.y, state.y);
       int initialHeight = mtx.height();
       String fromId = "$id-${item.id}-from";
       String toId = "$id-${item.id}-to";
       node.renderIncomes.add(fromId);
-      insertOrSkipNodeOnMatrix(
+      if (state.y == 0 ||
+          mtx.hasLoopAnchorCollision(state.x, state.y - 1, income.x, toId)) {
+        mtx.insertRowBefore(state.y);
+      } else {
+        state.y--;
+      }
+      insertNodeOnMatrix(
         NodeOutput(
           id: toId,
           next: [EdgeInput(outcome: id)],
@@ -182,7 +200,7 @@ class GraphMatrix extends GraphBasic {
           isAnchor: true,
           renderIncomes: [renderIncomeId],
           passedIncomes: [item.id],
-          childrenOnMatrix: 0,
+          childrenOnMatrix: 1,
         ),
         state,
         true,
@@ -191,7 +209,7 @@ class GraphMatrix extends GraphBasic {
         initialY++;
       }
       state.x = income.x;
-      insertOrSkipNodeOnMatrix(
+      insertNodeOnMatrix(
         NodeOutput(
           id: fromId,
           next: [EdgeInput(outcome: id)],
@@ -203,7 +221,7 @@ class GraphMatrix extends GraphBasic {
           isAnchor: true,
           renderIncomes: [toId],
           passedIncomes: [item.id],
-          childrenOnMatrix: 0,
+          childrenOnMatrix: 1,
         ),
         state,
         false,
@@ -238,7 +256,7 @@ class GraphMatrix extends GraphBasic {
       }
       topOutcomes.forEach((String outcomeId) {
         String id = "${item.id}-$outcomeId";
-        insertOrSkipNodeOnMatrix(
+        insertNodeOnMatrix(
           NodeOutput(
             id: id,
             next: [EdgeInput(outcome: outcomeId)],
@@ -273,7 +291,7 @@ class GraphMatrix extends GraphBasic {
     outcomes.forEach((String outcomeId) {
       state.y++;
       String id = "${item.id}-$outcomeId";
-      insertOrSkipNodeOnMatrix(
+      insertNodeOnMatrix(
         NodeOutput(
           id: id,
           next: [EdgeInput(outcome: outcomeId)],
@@ -316,7 +334,7 @@ class GraphMatrix extends GraphBasic {
       state.y = y;
       String id = "$incomeId-${item.id}";
       item.renderIncomes.add(id);
-      insertOrSkipNodeOnMatrix(
+      insertNodeOnMatrix(
         NodeOutput(
           id: id,
           next: [EdgeInput(outcome: item.id)],

@@ -26,7 +26,9 @@ class Graph extends GraphMatrix {
     resolveCurrentJoinIncomes(mtx, item);
     bool isInserted = processOrSkipNodeOnMatrix(item, state);
     if (isInserted) {
+      final initialY = state.y;
       insertJoinIncomes(item, state, levelQueue, false);
+      state.y = initialY;
       insertSplitOutcomes(item, state, levelQueue);
     }
   }

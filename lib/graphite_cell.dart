@@ -1,38 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:graphite/core/typings.dart';
-
-typedef NodeCellBuilder = Widget Function(
-    BuildContext context, MatrixNode node);
-
-typedef OverlayBuilder = Widget Function(
-    BuildContext context
-);
-
-typedef GestureNodeTapDownCallback = void Function(
-    TapDownDetails details, MatrixNode node, Rect rect);
-typedef GestureNodeTapUpCallback = void Function(
-    TapUpDetails details, MatrixNode node, Rect rect);
-
-typedef GestureNodeLongPressStartCallback = void Function(
-    LongPressStartDetails details, MatrixNode node, Rect rect);
-typedef GestureNodeLongPressEndCallback = void Function(
-    LongPressEndDetails details, MatrixNode node, Rect rect);
-typedef GestureNodeLongPressMoveUpdateCallback = void Function(
-    LongPressMoveUpdateDetails details, MatrixNode node, Rect rect);
-typedef GestureNodeForcePressStartCallback = void Function(
-    ForcePressDetails details, MatrixNode node, Rect rect);
-typedef GestureNodeForcePressEndCallback = void Function(
-    ForcePressDetails details, MatrixNode node, Rect rect);
-typedef GestureNodeForcePressPeakCallback = void Function(
-    ForcePressDetails details, MatrixNode node, Rect rect);
-typedef GestureNodeForcePressUpdateCallback = void Function(
-    ForcePressDetails details, MatrixNode node, Rect rect);
-typedef GestureNodeDragStartCallback = void Function(
-    DragStartDetails details, MatrixNode node, Rect rect);
-typedef GestureNodeDragUpdateCallback = void Function(
-    DragUpdateDetails details, MatrixNode node, Rect rect);
-typedef GestureNodeDragDownCallback = void Function(
-    DragDownDetails details, MatrixNode node, Rect rect);
+import 'package:graphite/graphite_typings.dart';
 
 Widget _defaultNodeCellBuilder(BuildContext context, MatrixNode node) {
   return Container(
@@ -64,10 +32,10 @@ class GraphiteCell extends StatefulWidget {
   final GestureNodeForcePressPeakCallback? onNodeForcePressPeak;
   final GestureNodeForcePressUpdateCallback? onNodeForcePressUpdate;
 
-  final GestureNodeDragStartCallback? onNodePanStart;
-  final GestureNodeDragUpdateCallback? onNodePanUpdate;
+  final GestureNodePanStartCallback? onNodePanStart;
+  final GestureNodePanUpdateCallback? onNodePanUpdate;
 
-  final GestureNodeDragDownCallback? onNodePanDown;
+  final GestureNodePanDownCallback? onNodePanDown;
   final GestureNodeTapDownCallback? onNodeSecondaryTapDown;
 
   final GestureNodeTapUpCallback? onNodeSecondaryTapUp;
@@ -101,58 +69,65 @@ class _GraphiteCellState extends State<GraphiteCell> {
   Widget build(BuildContext context) {
     var node = widget.node;
     return Container(
-            child: GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTapDown: widget.onNodeTapDown != null
-                  ? (details) => widget.onNodeTapDown!(details, node, widget.rect)
-                  : null,
-              onTapUp: widget.onNodeTapUp != null
-                  ? (details) => widget.onNodeTapUp!(details, node, widget.rect)
-                  : null,
-              onLongPressStart: widget.onNodeLongPressStart != null
-                  ? (details) => widget.onNodeLongPressStart!(details, node, widget.rect)
-                  : null,
-              onLongPressEnd: widget.onNodeLongPressEnd != null
-                  ? (details) => widget.onNodeLongPressEnd!(details, node, widget.rect)
-                  : null,
-              onLongPressMoveUpdate: widget.onNodeLongPressMoveUpdate != null
-                  ? (details) =>
-                      widget.onNodeLongPressMoveUpdate!(details, node, widget.rect)
-                  : null,
-              onForcePressStart: widget.onNodeForcePressStart != null
-                  ? (details) => widget.onNodeForcePressStart!(details, node, widget.rect)
-                  : null,
-              onForcePressEnd: widget.onNodeForcePressEnd != null
-                  ? (details) => widget.onNodeForcePressEnd!(details, node, widget.rect)
-                  : null,
-              onForcePressPeak: widget.onNodeForcePressPeak != null
-                  ? (details) => widget.onNodeForcePressPeak!(details, node, widget.rect)
-                  : null,
-              onForcePressUpdate: widget.onNodeForcePressUpdate != null
-                  ? (details) => widget.onNodeForcePressUpdate!(details, node, widget.rect)
-                  : null,
-              onPanStart: widget.onNodePanStart != null
-                  ? (details) => widget.onNodePanStart!(details, node, widget.rect)
-                  : null,
-              onPanUpdate: widget.onNodePanUpdate != null
-                  ? (details) => widget.onNodePanUpdate!(details, node, widget.rect)
-                  : null,
-              onPanDown: widget.onNodePanDown != null
-                  ? (details) => widget.onNodePanDown!(details, node, widget.rect)
-                  : null,
-              onSecondaryTapDown: widget.onNodeSecondaryTapDown != null
-                  ? (details) => widget.onNodeSecondaryTapDown!(details, node, widget.rect)
-                  : null,
-              onSecondaryTapUp: widget.onNodeSecondaryTapUp != null
-                  ? (details) => widget.onNodeSecondaryTapUp!(details, node, widget.rect)
-                  : null,
-              child: Builder(builder: (ctx) {
-                return widget.builder == null
-                    ? _defaultNodeCellBuilder(ctx, node)
-                    : widget.builder!(ctx, node);
-              }),
-              //child: Container(),
-            ),
-          );
+      child: GestureDetector(
+        onTapDown: widget.onNodeTapDown != null
+            ? (details) => widget.onNodeTapDown!(details, node, widget.rect)
+            : null,
+        onTapUp: widget.onNodeTapUp != null
+            ? (details) => widget.onNodeTapUp!(details, node, widget.rect)
+            : null,
+        onLongPressStart: widget.onNodeLongPressStart != null
+            ? (details) =>
+                widget.onNodeLongPressStart!(details, node, widget.rect)
+            : null,
+        onLongPressEnd: widget.onNodeLongPressEnd != null
+            ? (details) =>
+                widget.onNodeLongPressEnd!(details, node, widget.rect)
+            : null,
+        onLongPressMoveUpdate: widget.onNodeLongPressMoveUpdate != null
+            ? (details) =>
+                widget.onNodeLongPressMoveUpdate!(details, node, widget.rect)
+            : null,
+        onForcePressStart: widget.onNodeForcePressStart != null
+            ? (details) =>
+                widget.onNodeForcePressStart!(details, node, widget.rect)
+            : null,
+        onForcePressEnd: widget.onNodeForcePressEnd != null
+            ? (details) =>
+                widget.onNodeForcePressEnd!(details, node, widget.rect)
+            : null,
+        onForcePressPeak: widget.onNodeForcePressPeak != null
+            ? (details) =>
+                widget.onNodeForcePressPeak!(details, node, widget.rect)
+            : null,
+        onForcePressUpdate: widget.onNodeForcePressUpdate != null
+            ? (details) =>
+                widget.onNodeForcePressUpdate!(details, node, widget.rect)
+            : null,
+        onPanStart: widget.onNodePanStart != null
+            ? (details) => widget.onNodePanStart!(details, node, widget.rect)
+            : null,
+        onPanUpdate: widget.onNodePanUpdate != null
+            ? (details) => widget.onNodePanUpdate!(details, node, widget.rect)
+            : null,
+        onPanDown: widget.onNodePanDown != null
+            ? (details) => widget.onNodePanDown!(details, node, widget.rect)
+            : null,
+        onSecondaryTapDown: widget.onNodeSecondaryTapDown != null
+            ? (details) =>
+                widget.onNodeSecondaryTapDown!(details, node, widget.rect)
+            : null,
+        onSecondaryTapUp: widget.onNodeSecondaryTapUp != null
+            ? (details) =>
+                widget.onNodeSecondaryTapUp!(details, node, widget.rect)
+            : null,
+        child: Builder(builder: (ctx) {
+          return widget.builder == null
+              ? _defaultNodeCellBuilder(ctx, node)
+              : widget.builder!(ctx, node);
+        }),
+        //child: Container(),
+      ),
+    );
   }
 }

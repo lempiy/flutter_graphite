@@ -1,26 +1,32 @@
 import 'package:flutter/widgets.dart';
 import 'package:graphite/core/matrix.dart';
-import 'package:graphite/graphite_cell.dart';
+import 'package:graphite/core/typings.dart';
 import 'package:graphite/graphite_canvas.dart';
-import 'package:graphite/graphite_edges_painter.dart';
+import 'package:graphite/graphite_typings.dart';
 
 class GraphiteRoot extends StatefulWidget {
   final Matrix mtx;
-  final double defaultCellWidth;
-  final double defaultCellHeight;
-  final double cellPadding;
+  final Size defaultCellSize;
+  final EdgeInsets cellPadding;
   final double contactEdgesDistance;
   final MatrixOrientation orientation;
   final double tipLength;
   final double tipAngle;
   final double maxScale;
   final double minScale;
+  final TransformationController? transformationController;
+  final Clip clipBehavior;
 
   // Node
   final NodeCellBuilder? builder;
 
   // Overlay
   final OverlayBuilder? overlayBuilder;
+
+  // Edge label
+  final EdgeLabels? edgeLabels;
+
+  final ContentWrapperBuilder? contentWrapperBuilder;
 
   final GestureNodeTapDownCallback? onNodeTapDown;
 
@@ -36,10 +42,10 @@ class GraphiteRoot extends StatefulWidget {
   final GestureNodeForcePressPeakCallback? onNodeForcePressPeak;
   final GestureNodeForcePressUpdateCallback? onNodeForcePressUpdate;
 
-  final GestureNodeDragStartCallback? onNodePanStart;
-  final GestureNodeDragUpdateCallback? onNodePanUpdate;
+  final GestureNodePanStartCallback? onNodePanStart;
+  final GestureNodePanUpdateCallback? onNodePanUpdate;
 
-  final GestureNodeDragDownCallback? onNodePanDown;
+  final GestureNodePanDownCallback? onNodePanDown;
   final GestureNodeTapDownCallback? onNodeSecondaryTapDown;
 
   final GestureNodeTapUpCallback? onNodeSecondaryTapUp;
@@ -69,8 +75,7 @@ class GraphiteRoot extends StatefulWidget {
 
   GraphiteRoot({
     required this.mtx,
-    required this.defaultCellWidth,
-    required this.defaultCellHeight,
+    required this.defaultCellSize,
     required this.cellPadding,
     required this.tipLength,
     required this.tipAngle,
@@ -78,7 +83,11 @@ class GraphiteRoot extends StatefulWidget {
     required this.minScale,
     required this.orientation,
     required this.contactEdgesDistance,
+    required this.clipBehavior,
+    this.transformationController,
     this.overlayBuilder,
+    this.contentWrapperBuilder,
+    this.edgeLabels,
     this.onEdgeTapDown,
     this.onEdgeTapUp,
     this.onCanvasTap,
@@ -118,9 +127,12 @@ class _GraphiteRootState extends State<GraphiteRoot> {
   Widget build(BuildContext context) {
     return GraphiteCanvas(
         matrix: widget.mtx,
-        defaultCellWidth: widget.defaultCellWidth,
-        defaultCellHeight: widget.defaultCellHeight,
+        defaultCellSize: widget.defaultCellSize,
         overlayBuilder: widget.overlayBuilder,
+        contentWrapperBuilder: widget.contentWrapperBuilder,
+        clipBehavior: widget.clipBehavior,
+        transformationController: widget.transformationController,
+        edgeLabels: widget.edgeLabels,
         cellPadding: widget.cellPadding,
         contactEdgesDistance: widget.contactEdgesDistance,
         orientation: widget.orientation,

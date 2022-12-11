@@ -9,11 +9,6 @@ class FindNodeResult {
   NodeOutput item;
 }
 
-enum MatrixOrientation {
-  Horizontal,
-  Vertical,
-}
-
 String fillWithSpaces(String str, int l) {
   while (str.length < l) {
     str += " ";
@@ -39,12 +34,45 @@ class Matrix {
       return false;
     }
     var row = this.s[y];
-    return row.any((NodeOutput? point) {
+    return row.any((MatrixCell? point) {
       if (point != null && !this.isAllChildrenOnMatrix(point)) {
         return true;
       }
       return false;
     });
+  }
+
+  bool hasLoopAnchorCollision(int x, int y, int toX, String id) {
+    if (this.s.length == 0 || y >= this.s.length) {
+      return false;
+    }
+    if (x == 0) return false;
+    final row = this.s[y];
+    for (int dx = x - 1; dx >= toX + 1; dx--) {
+      final cell = row[dx];
+      if (cell == null) continue;
+      return true;
+    }
+    // check last
+    final cell = s[y][toX];
+    if (cell == null) return false;
+    if (!cell.isFull &&
+        cell.margin != null &&
+        cell.margin == AnchorMargin.start) return false;
+    return true;
+  }
+
+  bool cellBusyForItem(NodeOutput item, int x, int y) {
+    if (this.s.length == 0 || y >= this.s.length) {
+      return false;
+    }
+    final cell = s[y][x];
+    if (cell == null) return false;
+    if (!cell.isFull &&
+        item.isAnchor &&
+        cell.margin != null &&
+        cell.margin != item.anchorMargin) return false;
+    return true;
   }
 
   bool hasVerticalCollision(int x, int y) {
@@ -86,7 +114,7 @@ class Matrix {
   }
 
   void insertRowBefore(int y) {
-    List<NodeOutput?> row = List.filled(this.width(), null, growable: true);
+    List<MatrixCell?> row = List.filled(this.width(), null, growable: true);
     this.s.insert(y, row);
   }
 
@@ -105,7 +133,7 @@ class Matrix {
         var x = columnEntry.key;
         var cell = columnEntry.value;
         if (cell == null) return false;
-        if (f(cell)) {
+        if (cell.all.any((c) => f(c))) {
           result = [x, y];
           return true;
         }
@@ -124,8 +152,9 @@ class Matrix {
         var x = columnEntry.key;
         var cell = columnEntry.value;
         if (cell == null) return false;
-        if (f(cell)) {
-          result = FindNodeResult(coords: [x, y], item: cell);
+        final i = cell.all.indexWhere((c) => f(c));
+        if (i != -1) {
+          result = FindNodeResult(coords: [x, y], item: cell.all[i]);
           return true;
         }
         return false;
@@ -134,14 +163,37 @@ class Matrix {
     return result;
   }
 
-  NodeOutput? getByCoords(int x, int y) {
+  MatrixCell? getByCoords(int x, int y) {
     if (x >= this.width() || y >= this.height()) {
       return null;
     }
     return this.s[y][x];
   }
 
-  void insert(int x, int y, NodeOutput? item) {
+  void insert(int x, int y, NodeOutput item) {
+    if (this.height() <= y) {
+      this.extendHeight(y + 1);
+    }
+    if (this.width() <= x) {
+      this.extendWidth(x + 1);
+    }
+    final current = s[y][x];
+    if (current == null) {
+      this.s[y][x] = !item.isAnchor
+          ? MatrixCell(full: item)
+          : (item.anchorMargin! == AnchorMargin.end
+              ? MatrixCell(end: item)
+              : MatrixCell(start: item));
+      return;
+    }
+    if (!current.isFull &&
+        current.margin != null &&
+        current.margin != item.anchorMargin) {
+      current.add(item);
+    }
+  }
+
+  void put(int x, int y, MatrixCell? item) {
     if (this.height() <= y) {
       this.extendHeight(y + 1);
     }
@@ -151,8 +203,8 @@ class Matrix {
     this.s[y][x] = item;
   }
 
-  bool isAllChildrenOnMatrix(NodeOutput item) {
-    return item.next.length == item.childrenOnMatrix;
+  bool isAllChildrenOnMatrix(MatrixCell cell) {
+    return cell.all.every((item) => item.next.length == item.childrenOnMatrix);
   }
 
   Map<String, MatrixNode> normalize() {
@@ -162,10 +214,12 @@ class Matrix {
       var row = rowEntry.value;
       row.asMap().entries.forEach((columnEntry) {
         var x = columnEntry.key;
-        var item = columnEntry.value;
-        if (item != null) {
-          acc[item.id] =
-              MatrixNode.fromNodeOutput(x: x, y: y, nodeOutput: item);
+        var cell = columnEntry.value;
+        if (cell != null) {
+          cell.all.forEach((item) {
+            acc[item.id] =
+                MatrixNode.fromNodeOutput(x: x, y: y, nodeOutput: item);
+          });
         }
       });
     });
@@ -176,7 +230,7 @@ class Matrix {
     var newMtx = Matrix();
     s.asMap().forEach((y, row) {
       row.asMap().forEach((x, cell) {
-        newMtx.insert(y, x, cell);
+        newMtx.put(y, x, cell);
       });
     });
     newMtx.orientation = orientation == MatrixOrientation.Horizontal
@@ -187,22 +241,22 @@ class Matrix {
 
   String toString() {
     var result = "", max = 0;
-    s.forEach((List<NodeOutput?> row) {
-      row.forEach((NodeOutput? cell) {
+    s.forEach((List<MatrixCell?> row) {
+      row.forEach((MatrixCell? cell) {
         if (cell == null) return;
-        if (cell.id.length > max) {
-          max = cell.id.length;
+        if (cell.displayId.length > max) {
+          max = cell.displayId.length;
         }
       });
     });
-    s.forEach((List<NodeOutput?> row) {
-      row.forEach((NodeOutput? cell) {
+    s.forEach((List<MatrixCell?> row) {
+      row.forEach((MatrixCell? cell) {
         if (cell == null) {
           result += fillWithSpaces(" ", max);
           result += "│";
           return;
         }
-        result += fillWithSpaces(cell.id, max);
+        result += fillWithSpaces(cell.displayId, max);
         result += "│";
       });
       result += "\n";
@@ -211,5 +265,60 @@ class Matrix {
   }
 
   MatrixOrientation orientation;
-  List<List<NodeOutput?>> s;
+  List<List<MatrixCell?>> s;
+}
+
+class MatrixCell {
+  NodeOutput? start;
+  NodeOutput? end;
+  NodeOutput? full;
+  MatrixCell({this.full, this.start, this.end})
+      : assert((full != null && start == null && end == null) ||
+            (full == null && start != null && end == null) ||
+            (full == null && start == null && end != null) ||
+            (full == null && start != null && end != null));
+
+  bool get isFull => full != null;
+
+  String get displayId => isFull
+      ? full!.id
+      : (start != null && end != null
+          ? "${start!.id}+${end!.id}"
+          : (start ?? end)!.id);
+
+  AnchorMargin? get margin => isFull
+      ? null
+      : (start != null && end != null ? null : (start ?? end)!.anchorMargin);
+
+  List<NodeOutput> get all => isFull
+      ? [full!]
+      : (start != null && end != null ? [start!, end!] : [(start ?? end)!]);
+
+  void add(NodeOutput item) {
+    if (item.anchorMargin == AnchorMargin.end) {
+      if (end != null) {
+        throw "end is occupied";
+      }
+      end = item;
+    }
+    if (item.anchorMargin == AnchorMargin.start) {
+      if (start != null) {
+        throw "start is occupied";
+      }
+      start = item;
+    }
+  }
+
+  NodeOutput? getById(String id) {
+    if (full != null && full!.id == id) {
+      return full!;
+    }
+    if (start != null && start!.id == id) {
+      return start!;
+    }
+    if (end != null && end!.id == id) {
+      return end!;
+    }
+    return null;
+  }
 }

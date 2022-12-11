@@ -20,6 +20,11 @@ enum AnchorOrientation {
 
 enum AnchorMargin { none, start, end }
 
+enum MatrixOrientation {
+  Horizontal,
+  Vertical,
+}
+
 List<NodeInput> nodeInputFromJson(String str) =>
     List<NodeInput>.from(json.decode(str).map((x) => NodeInput.fromJson(x)));
 
@@ -29,12 +34,24 @@ String nodeInputToJson(List<NodeInput> data) =>
 enum EdgeArrowType { none, one, both }
 
 class EdgeInput {
+  /// Input data for node's edge.
+  /// [outcome] *unique* identifier of the outcome node. Outcome node should exist
+  /// in [DirectGraph.list].
+  /// [type] style of arrows to be drawn on the edge if [DirectGraph.pathBuilder] is not
+  /// defined and default builder is used.
   EdgeInput({
     required this.outcome,
     this.type = EdgeArrowType.one,
   });
 
+  /// [outcome] *unique* identifier of the outcome node. Outcome node should exist
+  /// in [DirectGraph.list].
   final String outcome;
+
+  /// style of arrows to be drawn on the edge
+  /// [EdgeArrowType.none] draw no arrows.
+  /// [EdgeArrowType.one] draw arrow only at the end of the edge.
+  /// [EdgeArrowType.both] draw arrows on both sides of the edge.
   final EdgeArrowType type;
 
   factory EdgeInput.fromJson(Map<String, dynamic> json) => EdgeInput(
@@ -93,14 +110,23 @@ class NodeSize {
 }
 
 class NodeInput {
+  /// Input data for graphite graph's node.
+  /// [id] *unique* id of the node.
+  /// [next] outcomes list for the node defined as list of [EdgeInput]'s.
+  /// custom [size] of the node to override [DirectGraph.defaultCellSize].
   NodeInput({
     required this.id,
     required this.next,
     this.size,
   });
 
+  /// [NodeSize] of the node to override [DirectGraph.defaultCellSize] .
   final NodeSize? size;
+
+  /// *unique* identifier of the node.
   final String id;
+
+  /// outcomes list for the node defined as list of [EdgeInput]'s.
   final List<EdgeInput> next;
 
   double? getWidth() {
@@ -137,7 +163,6 @@ class MatrixNode extends NodeOutput {
     required this.y,
     required String id,
     required List<EdgeInput> next,
-
     NodeSize? size,
     AnchorType? anchorType,
     String? from,
@@ -182,34 +207,15 @@ class MatrixNode extends NodeOutput {
     );
   }
 
+  /// column index of node inside two dimensional matrix
   final int x;
+
+  /// row index of node inside two dimensional matrix
   final int y;
 
   NodeInput toInput() {
     return NodeInput(id: id, next: next, size: size);
   }
-}
-
-class NodeItem extends NodeInput {
-  bool isAnchor;
-  List<String> passedIncomes = [];
-  List<String> renderIncomes = [];
-  int? childrenOnMatrix;
-
-  NodeItem({
-    required String id,
-    required List<EdgeInput> next,
-    NodeSize? size,
-    this.anchorType,
-    this.from,
-    this.to,
-    this.orientation,
-    this.isAnchor = false,
-    this.passedIncomes = const [],
-    this.renderIncomes = const [],
-    this.childrenOnMatrix,
-    this.anchorMargin,
-  }) : super(id: id, next: next, size: size);
 }
 
 class NodeOutput extends NodeInput {
@@ -257,4 +263,13 @@ class LoopNode {
   int x;
   int y;
   bool isSelfLoop;
+}
+
+class Edge {
+  final List<List<double>> points;
+  final MatrixNode from;
+  final MatrixNode to;
+  final EdgeArrowType arrowType;
+
+  Edge(this.points, this.from, this.to, this.arrowType);
 }
