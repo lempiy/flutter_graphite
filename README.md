@@ -10,24 +10,51 @@
 
 :arrow_right: :black_square_button: Flutter widget to draw direct graphs, trees, flowcharts in rectanglar manner.
 
+#### Support the author :yellow_heart: :blue_heart:
 
-![vertical](./image/vertical.gif)  ![horizontal](./image/horizontal.gif)  ![custom](./image/custom.gif)
+
+[![](./image/cba.svg)](https://savelife.in.ua/en/donate-en/#donate-army-card-once)
+
+
+The only reason why the latest release of Graphite become possible is because of __Armed Forces Of Ukraine__.
+Ukrainian defenders are those who saved the author's life last spring and currently continue fighting 
+with absolute evil in my country. If you liked this lib and want to support future releases I would 
+be grateful for your donations to [Come Back Alive](https://savelife.in.ua/en/donate-en/#donate-army-card-once) Charity which directly supports UA Army with equipment. 
+
+Thank you.
+
+
+![vertical](./image/vertical.gif)  ![custom](./image/custom.gif)
+
+
+![flowchart](./image/flo.gif)
+
+
+![label](./image/leb.gif)
+
+
+![digimon](./image/dig.gif)
+
 
 
 ## Example of usage:
 ```dart
 import 'package:flutter/material.dart';
-import 'package:graphite/core/matrix.dart';
-import 'package:graphite/core/typings.dart';
 import 'package:graphite/graphite.dart';
 
 void main() => runApp(MyApp());
-const presetBasic =
-    '[{"id":"A","next":["B"]},{"id":"B","next":["C","D","E"]},'
-    '{"id":"C","next":["F"]},{"id":"D","next":["J"]},{"id":"E","next":["J"]},'
-    '{"id":"J","next":["I"]},{"id":"I","next":["H"]},{"id":"F","next":["K"]},'
-    '{"id":"K","next":["L"]},{"id":"H","next":["L"]},{"id":"L","next":["P"]},'
-    '{"id":"P","next":["M","N"]},{"id":"M","next":[]},{"id":"N","next":[]}]';
+const list = '['
+    '{"id":"A","next":[{"outcome":"B"}]},'
+    '{"id":"B","next":[{"outcome":"C"},{"outcome":"D"},{"outcome":"E"}]},'
+    '{"id":"C","next":[{"outcome":"F"}]},'
+    '{"id":"D","next":[{"outcome":"J"}]},{"id":"E","next":[{"outcome":"J"}]},'
+    '{"id":"J","next":[{"outcome":"I"}]},'
+    '{"id":"I","next":[{"outcome":"H"}]},{"id":"F","next":[{"outcome":"K"}]},'
+    '{"id":"K","next":[{"outcome":"L"}]},'
+    '{"id":"H","next":[{"outcome":"L"}]},{"id":"L","next":[{"outcome":"P"}]},'
+    '{"id":"P","next":[{"outcome":"M"},{"outcome":"N"}]},'
+    '{"id":"M","next":[]},{"id":"N","next":[]}'
+    ']';
 
 class MyApp extends StatelessWidget {
   @override
@@ -51,12 +78,11 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
-    var list = nodeInputFromJson(presetBasic);
     return Scaffold(
       body: DirectGraph(
-        list: list,
-        cellWidth: 136.0,
-        cellPadding: 24.0,
+        list: nodeInputFromJson(list),
+        defaultCellSize: const Size(100.0, 100.0),
+        cellPadding: const EdgeInsets.all(20),
         orientation: MatrixOrientation.Vertical,
       ),
     );
@@ -69,6 +95,8 @@ class _MyHomePageState extends State<MyHomePage> {
 * Ability provide graph building direction (horizontal or vertical).
 * Ability to scale & pan graph through Interactive Widget.
 * Ability to provide custom builder to node widget.
+* Ability to add overlays.
+* Ability to add edge text or `Widget` labels.
 * Ability to provide custom paint builder to graph edges.
 * Ability to customize arrows.
 

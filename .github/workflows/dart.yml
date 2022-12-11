@@ -11,9 +11,10 @@ jobs:
     name: install dependencies
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: subosito/flutter-action@v1.5.0
+    - uses: actions/checkout@v3
+    - uses: subosito/flutter-action@v2
       with:
-        flutter-version: '2.0.5'
+        flutter-version: '3.0.5'
+        channel: 'stable'
     - run: flutter pub get
     - run: flutter test

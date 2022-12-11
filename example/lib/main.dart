@@ -1,27 +1,73 @@
-import 'dart:ui';
-import 'dart:math' as math;
-
+import 'package:example/flowchart.dart';
+import 'package:example/labels.dart';
+import 'package:example/custom_edges.dart';
+import 'package:example/digimon.dart';
 import 'package:flutter/material.dart';
-import 'package:graphite/core/matrix.dart';
-import 'package:graphite/core/typings.dart';
-import 'package:graphite/graphite.dart';
 
-void main() => runApp(MyApp());
-const presetBasic = '[{"id":"A","next":["B"]},{"id":"B","next":["C","D","E"]},'
-    '{"id":"C","next":["F"]},{"id":"D","next":["J"]},{"id":"E","next":["J"]},'
-    '{"id":"J","next":["I"]},{"id":"I","next":["H"]},{"id":"F","next":["K"]},'
-    '{"id":"K","next":["L"]},{"id":"H","next":["L"]},{"id":"L","next":["P"]},'
-    '{"id":"P","next":["M","N"]},{"id":"M","next":[]},{"id":"N","next":[]}]';
+void main() => runApp(const MyApp());
 
-const presetComplex = '[{"id":"A","next":["B"]},{"id":"U","next":["G"]},'
-    '{"id":"B","next":["C","D","E","F","M"]},{"id":"C","next":["G"]},'
-    '{"id":"D","next":["H"]},{"id":"E","next":["H"]},{"id":"F","next":["N","O"]},'
-    '{"id":"N","next":["I"]},{"id":"O","next":["P"]},{"id":"P","next":["I"]},'
-    '{"id":"M","next":["L"]},{"id":"G","next":["I"]},{"id":"H","next":["J"]},'
-    '{"id":"I","next":[]},{"id":"J","next":["K"]},'
-    '{"id":"K","next":["L"]},{"id":"L","next":[]}]';
+class MyApp extends StatefulWidget {
+  const MyApp({super.key});
 
-class MyApp extends StatelessWidget {
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  int _selectedIndex = 0;
+
+  void _onChangePage(BuildContext context, int index) {
+    setState(() {
+      _selectedIndex = index;
+      Navigator.push(
+          context,
+          PageRouteBuilder(
+              transitionDuration: const Duration(seconds: 1),
+              pageBuilder: (_, __, ___) => [
+                    FlowchartPage(bottomBar: _buildBottomBar),
+                    LabelsPage(bottomBar: _buildBottomBar),
+                    DigimonPage(bottomBar: _buildBottomBar),
+                    CustomEdgesPage(bottomBar: _buildBottomBar)
+                  ][index]));
+    });
+  }
+
+  Widget _buildBottomBar(BuildContext context) {
+    return BottomNavigationBar(
+      items: <BottomNavigationBarItem>[
+        BottomNavigationBarItem(
+          icon:
+              Icon(Icons.account_tree, color: Theme.of(context).disabledColor),
+          activeIcon:
+              Icon(Icons.account_tree, color: Theme.of(context).primaryColor),
+          label: 'Flowchart',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.text_format_outlined,
+              color: Theme.of(context).disabledColor),
+          activeIcon: Icon(Icons.text_format_outlined,
+              color: Theme.of(context).primaryColor),
+          label: 'Labels',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.layers, color: Theme.of(context).disabledColor),
+          activeIcon: Icon(Icons.layers, color: Theme.of(context).primaryColor),
+          label: 'Overlays',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.stacked_line_chart,
+              color: Theme.of(context).disabledColor),
+          activeIcon: Icon(Icons.stacked_line_chart,
+              color: Theme.of(context).primaryColor),
+          label: 'Edges',
+        ),
+      ],
+      currentIndex: _selectedIndex,
+      selectedItemColor: Colors.teal[800],
+      onTap: (index) => _onChangePage(context, index),
+    );
+  }
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -29,171 +75,19 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Graphite',
       theme: ThemeData(
         primarySwatch: Colors.teal,
+        backgroundColor: Colors.white,
       ),
-      home: BasicPage(),
-      routes: routes,
+      home: FlowchartPage(bottomBar: _buildBottomBar),
+      routes: <String, WidgetBuilder>{
+        '/flowchart': (BuildContext context) =>
+            FlowchartPage(bottomBar: _buildBottomBar),
+        '/labels': (BuildContext context) =>
+            LabelsPage(bottomBar: _buildBottomBar),
+        '/digimon': (BuildContext context) =>
+            DigimonPage(bottomBar: _buildBottomBar),
+        '/complex': (BuildContext context) =>
+            CustomEdgesPage(bottomBar: _buildBottomBar),
+      },
     );
   }
-}
-
-class BasicPage extends StatefulWidget {
-  BasicPage({Key key}) : super(key: key);
-  @override
-  _BasicPageState createState() => _BasicPageState();
-}
-
-class _BasicPageState extends State<BasicPage> {
-  int _selectedIndex = 0;
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-    Navigator.push(
-        context,
-        PageRouteBuilder(
-            transitionDuration: Duration(seconds: 1),
-            pageBuilder: (_, __, ___) =>
-                index == 0 ? BasicPage() : CustomPage()));
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    var list = nodeInputFromJson(presetBasic);
-    return Scaffold(
-      appBar: AppBar(
-          leading: Icon(Icons.view_module), title: Text('Basic Example')),
-      body: DirectGraph(
-        list: list,
-        cellWidth: 136.0,
-        cellPadding: 24.0,
-        contactEdgesDistance: 10.0,
-        orientation: MatrixOrientation.Vertical,
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.view_module),
-            title: Text('Basic'),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.view_comfy),
-            title: Text('Custom'),
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.teal[800],
-        onTap: _onItemTapped,
-      ),
-    );
-  }
-}
-
-class CustomPage extends StatefulWidget {
-  CustomPage({Key key}) : super(key: key);
-  @override
-  _CustomPageState createState() {
-    return _CustomPageState();
-  }
-}
-
-class _CustomPageState extends State<CustomPage> {
-  List<NodeInput> list = nodeInputFromJson(presetComplex);
-  int _selectedIndex = 1;
-  Map<String, bool> selected = {};
-  void _onItemSelected(String nodeId) {
-    setState(() {
-      selected[nodeId] =
-          selected[nodeId] == null || !selected[nodeId] ? true : false;
-    });
-  }
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-    var nextPage = index == 0 ? BasicPage : CustomPage;
-    Navigator.push(
-        context,
-        PageRouteBuilder(
-            transitionDuration: Duration(seconds: 1),
-            pageBuilder: (_, __, ___) =>
-                index == 0 ? BasicPage() : CustomPage()));
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[200],
-      appBar: AppBar(
-          leading: Icon(Icons.view_comfy), title: Text('Custom Example')),
-      body: DirectGraph(
-        list: list,
-        cellWidth: 104.0,
-        cellPadding: 14.0,
-        contactEdgesDistance: 5.0,
-        orientation: MatrixOrientation.Vertical,
-        pathBuilder: customEdgePathBuilder,
-        builder: (ctx, node) {
-          return Card(
-            child: Center(
-              child: Text(
-                node.id,
-                style: selected[node.id] ?? false
-                    ? TextStyle(
-                        fontSize: 20.0,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.red)
-                    : TextStyle(fontSize: 20.0),
-              ),
-            ),
-          );
-        },
-        paintBuilder: (edge) {
-          var p = Paint()
-            ..color = Colors.blueGrey
-            ..style = PaintingStyle.stroke
-            ..strokeCap = StrokeCap.round
-            ..strokeJoin = StrokeJoin.round
-            ..strokeWidth = 2;
-          if ((selected[edge.from.id] ?? false) &&
-              (selected[edge.to.id] ?? false)) {
-            p.color = Colors.red;
-          }
-          return p;
-        },
-        onNodeTapDown: (_, node) {
-          _onItemSelected(node.id);
-        },
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.view_module),
-            label: 'Basic',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.view_comfy),
-            label: 'Custom',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.teal[800],
-        onTap: _onItemTapped,
-      ),
-    );
-  }
-}
-
-final Map<String, WidgetBuilder> routes = <String, WidgetBuilder>{
-  '/home': (BuildContext context) => BasicPage(),
-  '/complex': (BuildContext context) => CustomPage(),
-};
-
-Path customEdgePathBuilder(List<List<double>> points) {
-  var path = Path();
-  path.moveTo(points[0][0], points[0][1]);
-  points.sublist(1).forEach((p) {
-    path.lineTo(p[0], p[1]);
-  });
-  return path;
 }

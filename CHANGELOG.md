@@ -34,5 +34,20 @@
 
 * Use arrow_path v2.0, skip own fork
 
+## [1.0.0] - December 11, 2022
+
+* Param `cellSize` changed to `defaultCellSize` with `Size` type. Now it's possible to create non-square nodes. [#16](https://github.com/lempiy/flutter_graphite/issues/16)
+* Each node input now has `size` param allowing `defaultCellSize` override for particular nodes. [#15](https://github.com/lempiy/flutter_graphite/issues/15)
+* Node gestures know also have rect (`Rect`) as param, with info about node's position on `Stack`.
+* Ability to set `centered` node outcomes to provide more pretty graph rendering for tree-like graphs. [#2](https://github.com/lempiy/flutter_graphite/issues/2)
+* Ability to add overlays with `overlayBuilder` param.
+* Ability to add edge text or `Widget` labels using `edgeLabels` param. [#13](https://github.com/lempiy/flutter_graphite/issues/13)
+* Ability to wrap `InteractiveViewer` content with custom widget using `contentWrapperBuilder`.
+* Ability to draw double-headed arrows on edges or without arrows on edges via `EdgeInput.type`. [#4](https://github.com/lempiy/flutter_graphite/issues/4)
+* Added `clipBehavior`, `transformationController` as new params.
+* Fixed bugs with non-firing edge gestures and increased edges hitbox to improve UX. [#10](https://github.com/lempiy/flutter_graphite/issues/10) [#14](https://github.com/lempiy/flutter_graphite/issues/14)
+* More examples.
+* Many fixes and improvements for more compact graph rendering.
+
 
 
