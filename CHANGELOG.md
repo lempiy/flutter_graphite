@@ -49,5 +49,12 @@
 * More examples.
 * Many fixes and improvements for more compact graph rendering.
 
+## [1.1.0] - March 9, 2023
+
+* Removed internal `InteractiveViewer` dependency. Content boundaries, scrolls or `InteractiveViewer` usage are now on applications responsibility. [#20](https://github.com/lempiy/flutter_graphite/issues/20)
+* Removed `transformationController` since `InteractiveViewer` is no longer used.
+* Removed `contentWrapperBuilder` since `InteractiveViewer` is no longer used.
+* Changed `onCanvasTap` callback to provide tap details and trigger only if tapped out of other widgets and figures.
+
 
 

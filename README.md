@@ -79,12 +79,15 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: DirectGraph(
-        list: nodeInputFromJson(list),
-        defaultCellSize: const Size(100.0, 100.0),
-        cellPadding: const EdgeInsets.all(20),
-        orientation: MatrixOrientation.Vertical,
-      ),
+      body: InteractiveViewer(
+        constrained: false,
+        child: DirectGraph(
+          list: nodeInputFromJson(list),
+          defaultCellSize: const Size(100.0, 100.0),
+          cellPadding: const EdgeInsets.all(20),
+          orientation: MatrixOrientation.Vertical,
+       ),
+      )
     );
   }
 }
@@ -93,7 +96,6 @@ class _MyHomePageState extends State<MyHomePage> {
 ## Features
 * Nodes and edge gesture events.
 * Ability provide graph building direction (horizontal or vertical).
-* Ability to scale & pan graph through Interactive Widget.
 * Ability to provide custom builder to node widget.
 * Ability to add overlays.
 * Ability to add edge text or `Widget` labels.

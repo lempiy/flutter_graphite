@@ -74,6 +74,8 @@ typedef GestureNodePanUpdateCallback = void Function(
 typedef GestureNodePanDownCallback = void Function(
     DragDownDetails details, MatrixNode node, Rect rect);
 
+typedef GestureBackgroundTapCallback = void Function(
+    TapDownDetails details);
 typedef EdgePaintBuilder = Paint Function(Edge edge);
 typedef GestureEdgeTapDownCallback = void Function(
     TapDownDetails details, Edge edge);

@@ -14,7 +14,6 @@ class GraphiteRoot extends StatefulWidget {
   final double tipAngle;
   final double maxScale;
   final double minScale;
-  final TransformationController? transformationController;
   final Clip clipBehavior;
 
   // Node
@@ -25,8 +24,6 @@ class GraphiteRoot extends StatefulWidget {
 
   // Edge label
   final EdgeLabels? edgeLabels;
-
-  final ContentWrapperBuilder? contentWrapperBuilder;
 
   final GestureNodeTapDownCallback? onNodeTapDown;
 
@@ -54,7 +51,7 @@ class GraphiteRoot extends StatefulWidget {
   final EdgePaintBuilder? paintBuilder;
   final EdgePathBuilder? pathBuilder;
 
-  final GestureTapCallback? onCanvasTap;
+  final GestureBackgroundTapCallback? onCanvasTap;
   final GestureEdgeTapDownCallback? onEdgeTapDown;
 
   final GestureEdgeTapUpCallback? onEdgeTapUp;
@@ -84,9 +81,7 @@ class GraphiteRoot extends StatefulWidget {
     required this.orientation,
     required this.contactEdgesDistance,
     required this.clipBehavior,
-    this.transformationController,
     this.overlayBuilder,
-    this.contentWrapperBuilder,
     this.edgeLabels,
     this.onEdgeTapDown,
     this.onEdgeTapUp,
@@ -129,9 +124,7 @@ class _GraphiteRootState extends State<GraphiteRoot> {
         matrix: widget.mtx,
         defaultCellSize: widget.defaultCellSize,
         overlayBuilder: widget.overlayBuilder,
-        contentWrapperBuilder: widget.contentWrapperBuilder,
         clipBehavior: widget.clipBehavior,
-        transformationController: widget.transformationController,
         edgeLabels: widget.edgeLabels,
         cellPadding: widget.cellPadding,
         contactEdgesDistance: widget.contactEdgesDistance,
