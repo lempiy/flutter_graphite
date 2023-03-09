@@ -49,45 +49,51 @@ class CustomEdgesPageState extends State<CustomEdgesPage> {
       appBar: AppBar(
           leading: const Icon(Icons.view_comfy),
           title: const Text('Custom Edges Example')),
-      body: DirectGraph(
-        list: list,
-        defaultCellSize: const Size(104.0, 104.0),
-        cellPadding: const EdgeInsets.all(14),
-        contactEdgesDistance: 5.0,
-        orientation: MatrixOrientation.Vertical,
-        pathBuilder: customEdgePathBuilder,
-        centered: false,
-        nodeBuilder: (ctx, node) {
-          return Card(
-            child: Center(
-              child: Text(
-                node.id,
-                style: selected[node.id] ?? false
-                    ? const TextStyle(
-                        fontSize: 20.0,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.red)
-                    : const TextStyle(fontSize: 20.0),
+      body: InteractiveViewer(
+        constrained: false,
+        child: DirectGraph(
+          list: list,
+          defaultCellSize: const Size(104.0, 104.0),
+          cellPadding: const EdgeInsets.all(14),
+          contactEdgesDistance: 5.0,
+          orientation: MatrixOrientation.Vertical,
+          pathBuilder: customEdgePathBuilder,
+          centered: false,
+          onEdgeTapDown: (details, edge) {
+            print("${edge.from.id}->${edge.to.id}");
+          },
+          nodeBuilder: (ctx, node) {
+            return Card(
+              child: Center(
+                child: Text(
+                  node.id,
+                  style: selected[node.id] ?? false
+                      ? const TextStyle(
+                          fontSize: 20.0,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red)
+                      : const TextStyle(fontSize: 20.0),
+                ),
               ),
-            ),
-          );
-        },
-        paintBuilder: (edge) {
-          var p = Paint()
-            ..color = Colors.blueGrey
-            ..style = PaintingStyle.stroke
-            ..strokeCap = StrokeCap.round
-            ..strokeJoin = StrokeJoin.round
-            ..strokeWidth = 2;
-          if ((selected[edge.from.id] ?? false) &&
-              (selected[edge.to.id] ?? false)) {
-            p.color = Colors.red;
-          }
-          return p;
-        },
-        onNodeTapDown: (_, node, __) {
-          _onItemSelected(node.id);
-        },
+            );
+          },
+          paintBuilder: (edge) {
+            var p = Paint()
+              ..color = Colors.blueGrey
+              ..style = PaintingStyle.stroke
+              ..strokeCap = StrokeCap.round
+              ..strokeJoin = StrokeJoin.round
+              ..strokeWidth = 2;
+            if ((selected[edge.from.id] ?? false) &&
+                (selected[edge.to.id] ?? false)) {
+              p.color = Colors.red;
+            }
+            return p;
+          },
+          onNodeTapDown: (_, node, __) {
+            _onItemSelected(node.id);
+          },
+        ),
       ),
       bottomNavigationBar: widget.bottomBar(context),
     );

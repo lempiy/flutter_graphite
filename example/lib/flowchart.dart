@@ -67,33 +67,28 @@ class FlowchartPageState extends State<FlowchartPage> {
       appBar: AppBar(
           leading: const Icon(Icons.view_module),
           title: const Text('Flowchart Example')),
-      body: Stack(
-        children: [
-          DirectGraph(
-            list: list,
-            defaultCellSize: const Size(250.0, 100.0),
-            cellPadding:
-                const EdgeInsets.symmetric(vertical: 30, horizontal: 5),
-            contactEdgesDistance: 0,
-            orientation: MatrixOrientation.Vertical,
-            nodeBuilder: (BuildContext context, NodeInput node) => Padding(
-                padding: const EdgeInsets.all(5), child: _buildNode(node)),
-            contentWrapperBuilder:
-                (BuildContext context, Size contentSize, Widget child) =>
-                    SizedBox(
-              width: max(screenSize.width, contentSize.width),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  child,
-                ],
-              ),
-            ),
-            centered: true,
-            minScale: .1,
-            maxScale: 1,
+      body: InteractiveViewer(
+        minScale: 0.5,
+        maxScale: 3,
+        constrained: false,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(minWidth: screenSize.width),
+          child: Center(
+            child: DirectGraph(
+                  list: list,
+                  defaultCellSize: const Size(250.0, 100.0),
+                  cellPadding:
+                      const EdgeInsets.symmetric(vertical: 30, horizontal: 5),
+                  contactEdgesDistance: 0,
+                  orientation: MatrixOrientation.Vertical,
+                  nodeBuilder: (BuildContext context, NodeInput node) => Padding(
+                      padding: const EdgeInsets.all(5), child: _buildNode(node)),
+                  centered: true,
+                  minScale: .1,
+                  maxScale: 1,
+                ),
           ),
-        ],
+        ),
       ),
       bottomNavigationBar: widget.bottomBar(context),
     );

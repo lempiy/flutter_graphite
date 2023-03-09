@@ -52,9 +52,6 @@ class DirectGraph extends StatefulWidget {
   /// Value for internal [InteractiveViewer.minScale].
   final double minScale;
 
-  /// Value for internal [InteractiveViewer.transformationController].
-  final TransformationController? transformationController;
-
   /// Value for internal [InteractiveViewer.clipBehavior] and [Stack.clipBehavior].
   final Clip clipBehavior;
 
@@ -67,12 +64,6 @@ class DirectGraph extends StatefulWidget {
   /// their position (x,y) in [Stack]. Return [Positioned] Widget with coordinates in particular
   /// position to create interactive tooltips.
   final OverlayBuilder? overlayBuilder;
-
-  /// Builder function to wrapper internal [Stack] with custom Widget __inside__ [InteractiveViewer].
-  /// Useful to add internal padding or to center internal content using
-  /// [MediaQuery] (simple [Center] wont work cause [InteractiveViewer] internally uses [OverflowBox]).
-  /// Provides info about internal content [Size].
-  final ContentWrapperBuilder? contentWrapperBuilder;
 
   /// List of params to draw labels on top or above the edges. Useful to comment
   /// relations between entities.
@@ -132,7 +123,7 @@ class DirectGraph extends StatefulWidget {
 
   /// [GestureDetector.onTapDown] event on any point inside canvas.
   /// Maybe used to bind action cancel event.
-  final GestureTapCallback? onCanvasTap;
+  final GestureBackgroundTapCallback? onCanvasTap;
 
   /// [GestureDetector.onTapDown]
   final GestureEdgeTapDownCallback? onEdgeTapDown;
@@ -250,8 +241,6 @@ class DirectGraph extends StatefulWidget {
     required this.defaultCellSize,
     required this.cellPadding,
     this.clipBehavior = Clip.hardEdge,
-    this.transformationController,
-    this.contentWrapperBuilder,
     this.centered = false,
     this.nodeBuilder,
     this.contactEdgesDistance = 5.0,
@@ -309,11 +298,9 @@ class _DirectGraphState extends State<DirectGraph> {
       edgeLabels: widget.edgeLabels,
       cellPadding: widget.cellPadding,
       clipBehavior: widget.clipBehavior,
-      transformationController: widget.transformationController,
       contactEdgesDistance: widget.contactEdgesDistance,
       orientation: widget.orientation,
       builder: widget.nodeBuilder,
-      contentWrapperBuilder: widget.contentWrapperBuilder,
       tipLength: widget.tipLength,
       tipAngle: widget.tipAngle,
       onCanvasTap: widget.onCanvasTap,

@@ -22,9 +22,7 @@ class GraphiteCanvas extends StatefulWidget {
   final double minScale;
   final NodeCellBuilder? builder;
   final OverlayBuilder? overlayBuilder;
-  final ContentWrapperBuilder? contentWrapperBuilder;
   final EdgeLabels? edgeLabels;
-  final TransformationController? transformationController;
   final Clip clipBehavior;
 
   final GestureNodeTapDownCallback? onNodeTapDown;
@@ -55,7 +53,7 @@ class GraphiteCanvas extends StatefulWidget {
 
   final GestureEdgeTapDownCallback? onEdgeTapDown;
 
-  final GestureTapCallback? onCanvasTap;
+  final GestureBackgroundTapCallback? onCanvasTap;
   final GestureEdgeTapUpCallback? onEdgeTapUp;
   final GestureEdgeLongPressStartCallback? onEdgeLongPressStart;
 
@@ -85,9 +83,7 @@ class GraphiteCanvas extends StatefulWidget {
     required this.minScale,
     required this.clipBehavior,
     this.overlayBuilder,
-    this.contentWrapperBuilder,
     this.edgeLabels,
-    this.transformationController,
     this.onEdgeTapDown,
     this.onEdgeTapUp,
     this.onEdgeLongPressStart,
@@ -127,12 +123,9 @@ class _GraphiteCanvasState extends State<GraphiteCanvas> {
   final StreamController<Gesture> touchController =
       StreamController.broadcast();
   StreamSubscription? streamSubscription;
-  late TransformationController _transformationController;
 
   @override
   initState() {
-    _transformationController =
-        widget.transformationController ?? TransformationController();
     super.initState();
   }
 
@@ -508,7 +501,21 @@ class _GraphiteCanvasState extends State<GraphiteCanvas> {
     return Container(
       width: size.width,
       height: size.height,
-      child: Builder(builder: (ctx) {
+      child: CanvasTouchDetector(
+        gesturesToOverride: [
+          GestureType.onTapDown,
+          GestureType.onTapUp,
+          GestureType.onLongPressStart,
+          GestureType.onLongPressEnd,
+          GestureType.onLongPressMoveUpdate,
+          GestureType.onForcePressStart,
+          GestureType.onForcePressEnd,
+          GestureType.onForcePressPeak,
+          GestureType.onForcePressUpdate,
+          GestureType.onSecondaryTapDown,
+          GestureType.onSecondaryTapUp,
+        ],
+          builder: (BuildContext ctx) {
         return CustomPaint(
           size: Size.infinite,
           painter: LinesPainter(
@@ -516,6 +523,7 @@ class _GraphiteCanvasState extends State<GraphiteCanvas> {
             edges,
             tipLength: widget.tipLength,
             tipAngle: widget.tipAngle,
+            onCanvasTap: widget.onCanvasTap,
             paintBuilder: widget.paintBuilder,
             onEdgeTapDown: widget.onEdgeTapDown,
             onEdgeTapUp: widget.onEdgeTapUp,
@@ -531,7 +539,7 @@ class _GraphiteCanvasState extends State<GraphiteCanvas> {
             pathBuilder: widget.pathBuilder,
           ),
         );
-      }),
+      })
     );
   }
 
@@ -553,143 +561,7 @@ class _GraphiteCanvasState extends State<GraphiteCanvas> {
   Widget build(BuildContext context) {
     final size = Size(_getWidthOfCanvas(), _getHeightOfCanvas());
     return TouchDetectionController(touchController, addStreamListener,
-        child: GestureDetector(
-          behavior: HitTestBehavior.translucent,
-          child: InteractiveViewer(
-            clipBehavior: widget.clipBehavior,
-            maxScale: widget.maxScale,
-            minScale: widget.minScale,
-            constrained: false,
-            transformationController: _transformationController,
-            child: widget.contentWrapperBuilder != null
-                ? widget.contentWrapperBuilder!(
-                    context, size, _buildStack(context, size))
-                : _buildStack(context, size),
-          ),
-          onTap: () {
-            if (widget.onCanvasTap != null) {
-              widget.onCanvasTap!();
-            }
-          },
-          onTapDown: (TapDownDetails tapDetail) {
-            touchController.add(Gesture(
-                GestureType.onTapDown,
-                TapDownDetails(
-                  globalPosition: _transformationController
-                      .toScene(tapDetail.globalPosition),
-                  kind: tapDetail.kind,
-                  localPosition: _transformationController
-                      .toScene(tapDetail.localPosition),
-                )));
-          },
-          onTapUp: (tapDetail) {
-            touchController.add(Gesture(
-                GestureType.onTapUp,
-                TapUpDetails(
-                  globalPosition: _transformationController
-                      .toScene(tapDetail.globalPosition),
-                  kind: tapDetail.kind,
-                  localPosition: _transformationController
-                      .toScene(tapDetail.localPosition),
-                )));
-          },
-          onLongPressStart: (tapDetail) {
-            touchController.add(Gesture(
-                GestureType.onLongPressStart,
-                LongPressStartDetails(
-                  globalPosition: _transformationController
-                      .toScene(tapDetail.globalPosition),
-                  localPosition: _transformationController
-                      .toScene(tapDetail.localPosition),
-                )));
-          },
-          onLongPressEnd: (tapDetail) {
-            touchController.add(Gesture(
-                GestureType.onLongPressEnd,
-                LongPressEndDetails(
-                  globalPosition: _transformationController
-                      .toScene(tapDetail.globalPosition),
-                  localPosition: _transformationController
-                      .toScene(tapDetail.localPosition),
-                )));
-          },
-          onLongPressMoveUpdate: (tapDetail) {
-            touchController.add(Gesture(
-                GestureType.onLongPressMoveUpdate,
-                LongPressMoveUpdateDetails(
-                  globalPosition: _transformationController
-                      .toScene(tapDetail.globalPosition),
-                  localPosition: _transformationController
-                      .toScene(tapDetail.localPosition),
-                )));
-          },
-          onForcePressStart: (tapDetail) {
-            touchController.add(Gesture(
-                GestureType.onForcePressStart,
-                ForcePressDetails(
-                  globalPosition: _transformationController
-                      .toScene(tapDetail.globalPosition),
-                  localPosition: _transformationController
-                      .toScene(tapDetail.localPosition),
-                  pressure: tapDetail.pressure,
-                )));
-          },
-          onForcePressEnd: (tapDetail) {
-            touchController.add(Gesture(
-                GestureType.onForcePressEnd,
-                ForcePressDetails(
-                  globalPosition: _transformationController
-                      .toScene(tapDetail.globalPosition),
-                  localPosition: _transformationController
-                      .toScene(tapDetail.localPosition),
-                  pressure: tapDetail.pressure,
-                )));
-          },
-          onForcePressPeak: (tapDetail) {
-            touchController.add(Gesture(
-                GestureType.onForcePressPeak,
-                ForcePressDetails(
-                  globalPosition: _transformationController
-                      .toScene(tapDetail.globalPosition),
-                  localPosition: _transformationController
-                      .toScene(tapDetail.localPosition),
-                  pressure: tapDetail.pressure,
-                )));
-          },
-          onForcePressUpdate: (tapDetail) {
-            touchController.add(Gesture(
-                GestureType.onForcePressUpdate,
-                ForcePressDetails(
-                  globalPosition: _transformationController
-                      .toScene(tapDetail.globalPosition),
-                  localPosition: _transformationController
-                      .toScene(tapDetail.localPosition),
-                  pressure: tapDetail.pressure,
-                )));
-          },
-          onSecondaryTapDown: (tapDetail) {
-            touchController.add(Gesture(
-                GestureType.onSecondaryTapDown,
-                TapDownDetails(
-                  globalPosition: _transformationController
-                      .toScene(tapDetail.globalPosition),
-                  kind: tapDetail.kind,
-                  localPosition: _transformationController
-                      .toScene(tapDetail.localPosition),
-                )));
-          },
-          onSecondaryTapUp: (tapDetail) {
-            touchController.add(Gesture(
-                GestureType.onSecondaryTapUp,
-                TapUpDetails(
-                  globalPosition: _transformationController
-                      .toScene(tapDetail.globalPosition),
-                  kind: tapDetail.kind,
-                  localPosition: _transformationController
-                      .toScene(tapDetail.localPosition),
-                )));
-          },
-        ));
+        child: _buildStack(context, size));
   }
 
   @override

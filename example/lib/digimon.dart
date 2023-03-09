@@ -257,7 +257,7 @@ class DigimonPageState extends State<DigimonPage>
     });
   }
 
-  _onCanvasTap() {
+  _onCanvasTap(TapDownDetails details) {
     setState(() {
       _currentNodeInfo = null;
     });
@@ -271,28 +271,30 @@ class DigimonPageState extends State<DigimonPage>
           title: const Text('Overlays Example')),
       body: Container(
         color: Colors.white,
-        child: DirectGraph(
-          list: imagePreset,
-          defaultCellSize: const Size(100.0, 100.0),
-          cellPadding: const EdgeInsets.symmetric(horizontal: 25, vertical: 5),
-          contactEdgesDistance: 5.0,
-          orientation: MatrixOrientation.Horizontal,
-          clipBehavior: Clip.none,
-          centered: true,
-          minScale: .1,
-          maxScale: 3,
-          overlayBuilder:
-              (BuildContext context, List<NodeInput> nodes, List<Edge> edges) =>
-                  _buildOverlay(context, nodes, edges),
-          contentWrapperBuilder:
-              (BuildContext context, Size size, Widget child) => Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 100),
-                  child: child),
-          onCanvasTap: _onCanvasTap,
-          onNodeTapUp: _onNodeTap,
-          nodeBuilder: (BuildContext context, NodeInput node) => FittedBox(
-            child: Image.asset(data[node.id]!.imageUrl),
-            //child: Image.asset(data[node.id]!.imageUrl),
+        child: InteractiveViewer(
+          constrained: false,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 100.0),
+            child: DirectGraph(
+              list: imagePreset,
+              defaultCellSize: const Size(100.0, 100.0),
+              cellPadding: const EdgeInsets.symmetric(horizontal: 25, vertical: 5),
+              contactEdgesDistance: 5.0,
+              orientation: MatrixOrientation.Horizontal,
+              clipBehavior: Clip.none,
+              centered: true,
+              minScale: .1,
+              maxScale: 3,
+              overlayBuilder:
+                  (BuildContext context, List<NodeInput> nodes, List<Edge> edges) =>
+                      _buildOverlay(context, nodes, edges),
+              onCanvasTap: _onCanvasTap,
+              onNodeTapUp: _onNodeTap,
+              nodeBuilder: (BuildContext context, NodeInput node) => FittedBox(
+                child: Image.asset(data[node.id]!.imageUrl),
+                //child: Image.asset(data[node.id]!.imageUrl),
+              ),
+            ),
           ),
         ),
       ),

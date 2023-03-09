@@ -21,6 +21,7 @@ class LinesPainter extends CustomPainter {
   final double tipLength;
   final double tipAngle;
 
+  final GestureBackgroundTapCallback? onCanvasTap;
   final GestureEdgeTapDownCallback? onEdgeTapDown;
   final PaintingStyle? edgePaintStyleForTouch;
 
@@ -60,6 +61,7 @@ class LinesPainter extends CustomPainter {
     this.edges, {
     required this.tipLength,
     required this.tipAngle,
+    this.onCanvasTap,
     this.onEdgeTapDown,
     this.edgePaintStyleForTouch,
     this.onEdgeTapUp,
@@ -79,6 +81,13 @@ class LinesPainter extends CustomPainter {
   @override
   void paint(Canvas c, Size size) {
     var canvas = TouchyCanvas(context, c);
+    var background = Paint()
+      ..color = Colors.transparent
+      ..style = PaintingStyle.fill;
+    canvas.drawRect(
+        Rect.fromPoints(Offset(0, 0), Offset(size.width, size.height)),
+        background,
+        onTapDown: onCanvasTap != null ? onCanvasTap : null);
     List<Edge> _state = edges;
     _state.forEach((e) {
       var points = e.points.reversed.toList();
@@ -98,42 +107,45 @@ class LinesPainter extends CustomPainter {
           ..color = Colors.transparent
           ..style = PaintingStyle.stroke
           ..strokeWidth = paint.strokeWidth * 3;
-        canvas.drawLine(Offset(points[i - 1][0], points[i - 1][1]),
-            Offset(points[i][0], points[i][1]), p,
-            paintStyleForTouch: PaintingStyle.fill,
-            onTapDown: onEdgeTapDown != null
-                ? (details) => onEdgeTapDown!(details, e)
-                : null,
-            onTapUp: onEdgeTapUp != null
-                ? (details) => onEdgeTapUp!(details, e)
-                : null,
-            onLongPressStart: onEdgeLongPressStart != null
-                ? (details) => onEdgeLongPressStart!(details, e)
-                : null,
-            onLongPressEnd: onEdgeLongPressEnd != null
-                ? (details) => onEdgeLongPressEnd!(details, e)
-                : null,
-            onLongPressMoveUpdate: onEdgeLongPressMoveUpdate != null
-                ? (details) => onEdgeLongPressMoveUpdate!(details, e)
-                : null,
-            onForcePressStart: onEdgeForcePressStart != null
-                ? (details) => onEdgeForcePressStart!(details, e)
-                : null,
-            onForcePressEnd: onEdgeForcePressEnd != null
-                ? (details) => onEdgeForcePressEnd!(details, e)
-                : null,
-            onForcePressPeak: onEdgeForcePressPeak != null
-                ? (details) => onEdgeForcePressPeak!(details, e)
-                : null,
-            onForcePressUpdate: onEdgeForcePressUpdate != null
-                ? (details) => onEdgeForcePressUpdate!(details, e)
-                : null,
-            onSecondaryTapDown: onEdgeSecondaryTapDown != null
-                ? (details) => onEdgeSecondaryTapDown!(details, e)
-                : null,
-            onSecondaryTapUp: onEdgeSecondaryTapUp != null
-                ? (details) => onEdgeSecondaryTapUp!(details, e)
-                : null);
+        canvas.drawLine(
+          Offset(points[i - 1][0], points[i - 1][1]),
+          Offset(points[i][0], points[i][1]),
+          p,
+          paintStyleForTouch: PaintingStyle.fill,
+          onTapDown: onEdgeTapDown != null
+              ? (details) => onEdgeTapDown!(details, e)
+              : null,
+          onTapUp: onEdgeTapUp != null
+              ? (details) => onEdgeTapUp!(details, e)
+              : null,
+          onLongPressStart: onEdgeLongPressStart != null
+              ? (details) => onEdgeLongPressStart!(details, e)
+              : null,
+          onLongPressEnd: onEdgeLongPressEnd != null
+              ? (details) => onEdgeLongPressEnd!(details, e)
+              : null,
+          onLongPressMoveUpdate: onEdgeLongPressMoveUpdate != null
+              ? (details) => onEdgeLongPressMoveUpdate!(details, e)
+              : null,
+          onForcePressStart: onEdgeForcePressStart != null
+              ? (details) => onEdgeForcePressStart!(details, e)
+              : null,
+          onForcePressEnd: onEdgeForcePressEnd != null
+              ? (details) => onEdgeForcePressEnd!(details, e)
+              : null,
+          onForcePressPeak: onEdgeForcePressPeak != null
+              ? (details) => onEdgeForcePressPeak!(details, e)
+              : null,
+          onForcePressUpdate: onEdgeForcePressUpdate != null
+              ? (details) => onEdgeForcePressUpdate!(details, e)
+              : null,
+          onSecondaryTapDown: onEdgeSecondaryTapDown != null
+              ? (details) => onEdgeSecondaryTapDown!(details, e)
+              : null,
+          onSecondaryTapUp: onEdgeSecondaryTapUp != null
+              ? (details) => onEdgeSecondaryTapUp!(details, e)
+              : null,
+        );
       }
     });
   }

@@ -41,44 +41,47 @@ class LabelsPageState extends State<LabelsPage> {
           title: const Text('Edge Labels Example')),
       body: Stack(
         children: [
-          DirectGraph(
-            list: list,
-            defaultCellSize: const Size(100.0, 100.0),
-            cellPadding: _isVertical
-                ? const EdgeInsets.symmetric(vertical: 30, horizontal: 5)
-                : const EdgeInsets.symmetric(vertical: 5, horizontal: 30),
-            contactEdgesDistance: 10.0,
-            orientation: _isVertical
-                ? MatrixOrientation.Vertical
-                : MatrixOrientation.Horizontal,
-            edgeLabels: EdgeLabels(
-                alignment: EdgeLabelTextAlignment.before,
-                positionPriority: EdgeLabelPositionPriority.horizontal,
-                builder: (context, edge, isVertical) => Padding(
-                      padding: const EdgeInsets.all(2),
-                      child: isVertical
-                          ? RotatedBox(
-                              quarterTurns: -1,
-                              child: Text(
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyText2!
-                                      .copyWith(
-                                          backgroundColor: Theme.of(context)
-                                              .backgroundColor),
-                                  "${edge.from.id}=>${edge.to.id}"))
-                          : Text(
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyText2!
-                                  .copyWith(
-                                      backgroundColor:
-                                          Theme.of(context).backgroundColor),
-                              "${edge.from.id}=>${edge.to.id}"),
-                    )),
-            centered: _isCentered,
-            minScale: .1,
-            maxScale: 1,
+          InteractiveViewer(
+            constrained: false,
+            child: DirectGraph(
+              list: list,
+              defaultCellSize: const Size(100.0, 100.0),
+              cellPadding: _isVertical
+                  ? const EdgeInsets.symmetric(vertical: 30, horizontal: 5)
+                  : const EdgeInsets.symmetric(vertical: 5, horizontal: 30),
+              contactEdgesDistance: 10.0,
+              orientation: _isVertical
+                  ? MatrixOrientation.Vertical
+                  : MatrixOrientation.Horizontal,
+              edgeLabels: EdgeLabels(
+                  alignment: EdgeLabelTextAlignment.before,
+                  positionPriority: EdgeLabelPositionPriority.horizontal,
+                  builder: (context, edge, isVertical) => Padding(
+                        padding: const EdgeInsets.all(2),
+                        child: isVertical
+                            ? RotatedBox(
+                                quarterTurns: -1,
+                                child: Text(
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyText2!
+                                        .copyWith(
+                                            backgroundColor: Theme.of(context)
+                                                .backgroundColor),
+                                    "${edge.from.id}=>${edge.to.id}"))
+                            : Text(
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyText2!
+                                    .copyWith(
+                                        backgroundColor:
+                                            Theme.of(context).backgroundColor),
+                                "${edge.from.id}=>${edge.to.id}"),
+                      )),
+              centered: _isCentered,
+              minScale: .1,
+              maxScale: 1,
+            ),
           ),
           Positioned(
             left: 0,
