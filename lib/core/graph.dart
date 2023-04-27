@@ -3,8 +3,6 @@ import 'package:graphite/core/matrix.dart';
 import 'package:graphite/core/traverse_queue.dart';
 import 'package:graphite/core/typings.dart';
 
-const MaxIterations = 1000;
-
 class Graph extends GraphMatrix {
   Graph({required List<NodeInput> list, required bool centred})
       : super(list: list, centred: centred);
@@ -86,24 +84,20 @@ class Graph extends GraphMatrix {
     }
   }
 
-  int traverseLevel(int iterations, State state) {
+  void traverseLevel(State state) {
     var queue = state.queue;
     var levelQueue = queue.drain();
     while (levelQueue.length() != 0) {
-      iterations++;
+      state.iterations++;
       NodeOutput item = levelQueue.shift();
       traverseItem(item, state, levelQueue);
-      if (iterations > MaxIterations) {
-        throw "max iterations reached";
-      }
     }
-    return iterations;
   }
 
   Matrix traverseList(State state) {
-    var safe = 0, mtx = state.mtx, queue = state.queue;
+    var mtx = state.mtx, queue = state.queue;
     while (queue.length() != 0) {
-      safe = traverseLevel(safe, state);
+      traverseLevel(state);
       state.x++;
     }
     return mtx;

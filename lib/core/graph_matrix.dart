@@ -10,11 +10,13 @@ class State {
   TraverseQueue queue;
   int x;
   int y;
+  int iterations;
   State({
     required this.mtx,
     required this.queue,
     this.x = 0,
     this.y = 0,
+    this.iterations = 0,
   });
 }
 
