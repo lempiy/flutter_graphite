@@ -56,5 +56,6 @@
 * Removed `contentWrapperBuilder` since `InteractiveViewer` is no longer used.
 * Changed `onCanvasTap` callback to provide tap details and trigger only if tapped out of other widgets and figures.
 
+## [1.1.1] - April 27, 2023
 
-
+* Removed max iterations limitation for graph.
