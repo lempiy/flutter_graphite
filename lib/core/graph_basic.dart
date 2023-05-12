@@ -61,6 +61,7 @@ class GraphBasic {
       if (nextNode == null) {
         throw 'node ${out.outcome} not found';
       }
+      if (totalSet.contains(out.outcome)) return;
       totalSet =
           this.traverseVertically(nextNode, Set.from(branchSet), totalSet);
     });

@@ -59,3 +59,7 @@
 ## [1.1.1] - April 27, 2023
 
 * Removed max iterations limitation for graph.
+
+## [1.1.2] - May 12, 2023
+
+* Fixed complexity bug with node relations detection.
