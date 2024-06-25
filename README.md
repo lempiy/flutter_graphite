@@ -100,7 +100,7 @@ class _MyHomePageState extends State<MyHomePage> {
 * Ability to add overlays.
 * Ability to add edge text or `Widget` labels.
 * Ability to provide custom paint builder to graph edges.
-* Ability to customize arrows.
+* Ability to customize arrows and lines.
 
 
 ## License

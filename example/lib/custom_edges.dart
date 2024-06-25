@@ -57,7 +57,6 @@ class CustomEdgesPageState extends State<CustomEdgesPage> {
           cellPadding: const EdgeInsets.all(14),
           contactEdgesDistance: 5.0,
           orientation: MatrixOrientation.Vertical,
-          pathBuilder: customEdgePathBuilder,
           centered: false,
           onEdgeTapDown: (details, edge) {
             print("${edge.from.id}->${edge.to.id}");
@@ -77,18 +76,31 @@ class CustomEdgesPageState extends State<CustomEdgesPage> {
               ),
             );
           },
-          paintBuilder: (edge) {
+          styleBuilder: (edge) {
             var p = Paint()
               ..color = Colors.blueGrey
               ..style = PaintingStyle.stroke
               ..strokeCap = StrokeCap.round
               ..strokeJoin = StrokeJoin.round
               ..strokeWidth = 2;
+            LineStyle lineStyle = LineStyle.solid;
+            switch (edge.from.id) {
+              case "U":
+                lineStyle = LineStyle.dotted;
+                break;
+              case "C":
+                lineStyle = LineStyle.dashed;
+                break;
+              case "M":
+                lineStyle = LineStyle.dashDotted;
+                break;
+            }
             if ((selected[edge.from.id] ?? false) &&
                 (selected[edge.to.id] ?? false)) {
               p.color = Colors.red;
             }
-            return p;
+            return EdgeStyle(
+                lineStyle: lineStyle, borderRadius: 40, linePaint: p);
           },
           onNodeTapDown: (_, node, __) {
             _onItemSelected(node.id);
@@ -98,14 +110,4 @@ class CustomEdgesPageState extends State<CustomEdgesPage> {
       bottomNavigationBar: widget.bottomBar(context),
     );
   }
-}
-
-Path customEdgePathBuilder(NodeInput from, NodeInput to,
-    List<List<double>> points, EdgeArrowType arrowType) {
-  var path = Path();
-  path.moveTo(points[0][0], points[0][1]);
-  points.sublist(1).forEach((p) {
-    path.lineTo(p[0], p[1]);
-  });
-  return path;
 }

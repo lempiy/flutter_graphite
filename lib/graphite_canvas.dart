@@ -16,8 +16,6 @@ class GraphiteCanvas extends StatefulWidget {
   final double contactEdgesDistance;
   final Matrix matrix;
   final MatrixOrientation orientation;
-  final double tipLength;
-  final double tipAngle;
   final double maxScale;
   final double minScale;
   final NodeCellBuilder? builder;
@@ -48,7 +46,7 @@ class GraphiteCanvas extends StatefulWidget {
   final GestureNodeTapUpCallback? onNodeSecondaryTapUp;
 
   // Edge
-  final EdgePaintBuilder? paintBuilder;
+  final EdgeStyleBuilder? styleBuilder;
   final EdgePathBuilder? pathBuilder;
 
   final GestureEdgeTapDownCallback? onEdgeTapDown;
@@ -77,8 +75,6 @@ class GraphiteCanvas extends StatefulWidget {
     required this.cellPadding,
     required this.contactEdgesDistance,
     required this.orientation,
-    required this.tipLength,
-    required this.tipAngle,
     required this.maxScale,
     required this.minScale,
     required this.clipBehavior,
@@ -96,7 +92,7 @@ class GraphiteCanvas extends StatefulWidget {
     this.onEdgeSecondaryTapDown,
     this.onEdgeSecondaryTapUp,
     this.onCanvasTap,
-    this.paintBuilder,
+    this.styleBuilder,
     this.pathBuilder,
     this.onNodeTapDown,
     this.onNodeTapUp,
@@ -499,48 +495,45 @@ class _GraphiteCanvasState extends State<GraphiteCanvas> {
 
   Widget _buildCanvas(BuildContext context, List<Edge> edges, Size size) {
     return Container(
-      width: size.width,
-      height: size.height,
-      child: CanvasTouchDetector(
-        gesturesToOverride: [
-          GestureType.onTapDown,
-          GestureType.onTapUp,
-          GestureType.onLongPressStart,
-          GestureType.onLongPressEnd,
-          GestureType.onLongPressMoveUpdate,
-          GestureType.onForcePressStart,
-          GestureType.onForcePressEnd,
-          GestureType.onForcePressPeak,
-          GestureType.onForcePressUpdate,
-          GestureType.onSecondaryTapDown,
-          GestureType.onSecondaryTapUp,
-        ],
-          builder: (BuildContext ctx) {
-        return CustomPaint(
-          size: Size.infinite,
-          painter: LinesPainter(
-            ctx,
-            edges,
-            tipLength: widget.tipLength,
-            tipAngle: widget.tipAngle,
-            onCanvasTap: widget.onCanvasTap,
-            paintBuilder: widget.paintBuilder,
-            onEdgeTapDown: widget.onEdgeTapDown,
-            onEdgeTapUp: widget.onEdgeTapUp,
-            onEdgeLongPressStart: widget.onEdgeLongPressStart,
-            onEdgeLongPressEnd: widget.onEdgeLongPressEnd,
-            onEdgeLongPressMoveUpdate: widget.onEdgeLongPressMoveUpdate,
-            onEdgeForcePressStart: widget.onEdgeForcePressStart,
-            onEdgeForcePressEnd: widget.onEdgeForcePressEnd,
-            onEdgeForcePressPeak: widget.onEdgeForcePressPeak,
-            onEdgeForcePressUpdate: widget.onEdgeForcePressUpdate,
-            onEdgeSecondaryTapDown: widget.onEdgeSecondaryTapDown,
-            onEdgeSecondaryTapUp: widget.onEdgeSecondaryTapUp,
-            pathBuilder: widget.pathBuilder,
-          ),
-        );
-      })
-    );
+        width: size.width,
+        height: size.height,
+        child: CanvasTouchDetector(
+            gesturesToOverride: [
+              GestureType.onTapDown,
+              GestureType.onTapUp,
+              GestureType.onLongPressStart,
+              GestureType.onLongPressEnd,
+              GestureType.onLongPressMoveUpdate,
+              GestureType.onForcePressStart,
+              GestureType.onForcePressEnd,
+              GestureType.onForcePressPeak,
+              GestureType.onForcePressUpdate,
+              GestureType.onSecondaryTapDown,
+              GestureType.onSecondaryTapUp,
+            ],
+            builder: (BuildContext ctx) {
+              return CustomPaint(
+                size: Size.infinite,
+                painter: LinesPainter(
+                  ctx,
+                  edges,
+                  onCanvasTap: widget.onCanvasTap,
+                  styleBuilder: widget.styleBuilder,
+                  onEdgeTapDown: widget.onEdgeTapDown,
+                  onEdgeTapUp: widget.onEdgeTapUp,
+                  onEdgeLongPressStart: widget.onEdgeLongPressStart,
+                  onEdgeLongPressEnd: widget.onEdgeLongPressEnd,
+                  onEdgeLongPressMoveUpdate: widget.onEdgeLongPressMoveUpdate,
+                  onEdgeForcePressStart: widget.onEdgeForcePressStart,
+                  onEdgeForcePressEnd: widget.onEdgeForcePressEnd,
+                  onEdgeForcePressPeak: widget.onEdgeForcePressPeak,
+                  onEdgeForcePressUpdate: widget.onEdgeForcePressUpdate,
+                  onEdgeSecondaryTapDown: widget.onEdgeSecondaryTapDown,
+                  onEdgeSecondaryTapUp: widget.onEdgeSecondaryTapUp,
+                  pathBuilder: widget.pathBuilder,
+                ),
+              );
+            }));
   }
 
   Widget _buildStack(BuildContext context, Size size) {

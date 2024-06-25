@@ -1,7 +1,5 @@
 library graphite;
 
-import 'dart:math' as math;
-
 import 'package:flutter/widgets.dart';
 import 'package:graphite/core/graph.dart';
 import 'package:graphite/core/matrix.dart';
@@ -37,14 +35,6 @@ class DirectGraph extends StatefulWidget {
   /// [MatrixOrientation.Vertical]. Use [MatrixOrientation.Horizontal] for row
   /// views and [MatrixOrientation.Vertical] for column views.
   final MatrixOrientation orientation;
-
-  /// is the length (in pixels) of each of the 2 lines making the arrow.
-  /// Ignored if using custom [pathBuilder] is set.
-  final double tipLength;
-
-  /// [tipAngle] is the angle (in radians) between each of the 2 lines making the arrow and the curve at this point.
-  /// Ignored if using custom [pathBuilder] is set.
-  final double tipAngle;
 
   /// Value for internal [InteractiveViewer.maxScale].
   final double maxScale;
@@ -111,14 +101,15 @@ class DirectGraph extends StatefulWidget {
   /// [GestureDetector.onSecondaryTapUp] for node widget.
   final GestureNodeTapUpCallback? onNodeSecondaryTapUp;
 
-  /// [Path] builder function to draw custom shaped edges.
-  /// Called on each canvas render cycle, provides info about each
-  /// edge as [Edge]. If set, arrows on tip of each path wont be added.
-  final EdgePaintBuilder? paintBuilder;
-
-  /// [Paint] builder function to provide custom style for node edges.
+  /// [EdgeStyle] builder function to provide custom style for node edges.
   /// Called on each canvas render cycle, provides info about each
   /// edge as [Edge].
+  final EdgeStyleBuilder? styleBuilder;
+
+  /// [Path] builder function to draw custom shaped edges.
+  /// Allows user to define fully custom edge path shape.
+  /// Called on each canvas render cycle, provides info about each
+  /// edge as [Edge]. If set, arrows on tip of each path wont be added.
   final EdgePathBuilder? pathBuilder;
 
   /// [GestureDetector.onTapDown] event on any point inside canvas.
@@ -175,12 +166,6 @@ class DirectGraph extends StatefulWidget {
   ///
   /// Use [cellPadding] to set padding between nodes. Note, that increasing [cellPadding] will
   /// increase edges length, which might be useful if you need more space to add overlays or labels.
-  ///
-  /// [tipLength] is the length (in pixels) of each of the 2 lines making the arrow.
-  /// Ignored if using custom [pathBuilder] is set.
-  ///
-  /// [tipAngle] is the angle (in radians) between each of the 2 lines making the arrow and the curve at this point.
-  /// Ignored if using custom [pathBuilder] is set. Defaults to [math.pi] * 0.1.
   ///
   /// If [clipBehavior] clipBehavior of internal InteractiveViewer and Stack.
   /// Defaults to [Clip.hardEdge].
@@ -245,12 +230,10 @@ class DirectGraph extends StatefulWidget {
     this.nodeBuilder,
     this.contactEdgesDistance = 5.0,
     this.orientation = MatrixOrientation.Horizontal,
-    this.tipAngle = math.pi * 0.1,
-    this.tipLength = 10.0,
     this.maxScale = 2.5,
     this.minScale = 0.25,
     this.pathBuilder,
-    this.paintBuilder,
+    this.styleBuilder,
     this.overlayBuilder,
     this.edgeLabels,
     this.onCanvasTap,
@@ -301,8 +284,6 @@ class _DirectGraphState extends State<DirectGraph> {
       contactEdgesDistance: widget.contactEdgesDistance,
       orientation: widget.orientation,
       builder: widget.nodeBuilder,
-      tipLength: widget.tipLength,
-      tipAngle: widget.tipAngle,
       onCanvasTap: widget.onCanvasTap,
       onNodeTapDown: widget.onNodeTapDown,
       onNodeTapUp: widget.onNodeTapUp,
@@ -318,7 +299,7 @@ class _DirectGraphState extends State<DirectGraph> {
       onNodePanDown: widget.onNodePanDown,
       onNodeSecondaryTapDown: widget.onNodeSecondaryTapDown,
       onNodeSecondaryTapUp: widget.onNodeSecondaryTapUp,
-      paintBuilder: widget.paintBuilder,
+      styleBuilder: widget.styleBuilder,
       onEdgeTapDown: widget.onEdgeTapDown,
       onEdgeTapUp: widget.onEdgeTapUp,
       onEdgeLongPressStart: widget.onEdgeLongPressStart,
