@@ -63,3 +63,11 @@
 ## [1.1.2] - May 12, 2023
 
 * Fixed complexity bug with node relations detection.
+
+## [1.2.0] - Jun 25, 2024
+
+* Added new `EdgeStyle` param with options for edges customization, like border-radius and like style.
+* Changed `PaintBuilder` to `EdgeStyleBuilder`, paint selection is now a part of `EdgeStyleBuilder`.
+* Changed `PathBuilder` to accept `EdgeStyle style` param as an argument.
+* Edges gestures hit-box rework.
+

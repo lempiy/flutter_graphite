@@ -229,11 +229,11 @@ class DigimonPageState extends State<DigimonPage>
                       children: [
                         Text(
                           _currentNodeInfo!.data.title,
-                          style: Theme.of(context).textTheme.headline6,
+                          style: Theme.of(context).textTheme.titleSmall,
                         ),
                         Text(
                           "Level: ${_currentNodeInfo!.data.level}",
-                          style: Theme.of(context).textTheme.subtitle2,
+                          style: Theme.of(context).textTheme.titleMedium,
                         ),
                       ],
                     ),
@@ -278,16 +278,17 @@ class DigimonPageState extends State<DigimonPage>
             child: DirectGraph(
               list: imagePreset,
               defaultCellSize: const Size(100.0, 100.0),
-              cellPadding: const EdgeInsets.symmetric(horizontal: 25, vertical: 5),
+              cellPadding:
+                  const EdgeInsets.symmetric(horizontal: 25, vertical: 5),
               contactEdgesDistance: 5.0,
               orientation: MatrixOrientation.Horizontal,
               clipBehavior: Clip.none,
               centered: true,
               minScale: .1,
               maxScale: 3,
-              overlayBuilder:
-                  (BuildContext context, List<NodeInput> nodes, List<Edge> edges) =>
-                      _buildOverlay(context, nodes, edges),
+              overlayBuilder: (BuildContext context, List<NodeInput> nodes,
+                      List<Edge> edges) =>
+                  _buildOverlay(context, nodes, edges),
               onCanvasTap: _onCanvasTap,
               onNodeTapUp: _onNodeTap,
               nodeBuilder: (BuildContext context, NodeInput node) => FittedBox(

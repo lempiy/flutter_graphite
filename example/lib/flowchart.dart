@@ -75,18 +75,18 @@ class FlowchartPageState extends State<FlowchartPage> {
           constraints: BoxConstraints(minWidth: screenSize.width),
           child: Center(
             child: DirectGraph(
-                  list: list,
-                  defaultCellSize: const Size(250.0, 100.0),
-                  cellPadding:
-                      const EdgeInsets.symmetric(vertical: 30, horizontal: 5),
-                  contactEdgesDistance: 0,
-                  orientation: MatrixOrientation.Vertical,
-                  nodeBuilder: (BuildContext context, NodeInput node) => Padding(
-                      padding: const EdgeInsets.all(5), child: _buildNode(node)),
-                  centered: true,
-                  minScale: .1,
-                  maxScale: 1,
-                ),
+              list: list,
+              defaultCellSize: const Size(250.0, 100.0),
+              cellPadding:
+                  const EdgeInsets.symmetric(vertical: 30, horizontal: 5),
+              contactEdgesDistance: 0,
+              orientation: MatrixOrientation.Vertical,
+              nodeBuilder: (BuildContext context, NodeInput node) => Padding(
+                  padding: const EdgeInsets.all(5), child: _buildNode(node)),
+              centered: true,
+              minScale: .1,
+              maxScale: 1,
+            ),
           ),
         ),
       ),
@@ -113,7 +113,7 @@ class Start extends StatelessWidget {
       child: Center(
         child: Text(
           data.text,
-          style: Theme.of(context).textTheme.subtitle2,
+          style: Theme.of(context).textTheme.titleMedium,
         ),
       ),
     );
@@ -138,7 +138,7 @@ class Document extends StatelessWidget {
       child: Center(
         child: Text(
           data.text,
-          style: Theme.of(context).textTheme.subtitle2,
+          style: Theme.of(context).textTheme.titleMedium,
         ),
       ),
     );
@@ -163,7 +163,7 @@ class Process extends StatelessWidget {
       child: Center(
         child: Text(
           data.text,
-          style: Theme.of(context).textTheme.subtitle2,
+          style: Theme.of(context).textTheme.titleMedium,
         ),
       ),
     );
@@ -198,7 +198,7 @@ class Decision extends StatelessWidget {
           child: Center(
             child: Text(
               data.text,
-              style: Theme.of(context).textTheme.subtitle2,
+              style: Theme.of(context).textTheme.titleMedium,
             ),
           ),
         )
@@ -225,7 +225,7 @@ class End extends StatelessWidget {
       child: Center(
         child: Text(
           data.text,
-          style: Theme.of(context).textTheme.subtitle2,
+          style: Theme.of(context).textTheme.titleMedium,
         ),
       ),
     );

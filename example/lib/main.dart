@@ -74,8 +74,9 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       title: 'Flutter Graphite',
       theme: ThemeData(
-        primarySwatch: Colors.teal,
-        backgroundColor: Colors.white,
+        colorScheme: ColorScheme.fromSwatch(
+                primarySwatch: Colors.teal, backgroundColor: Colors.white)
+            .copyWith(surface: Colors.white),
       ),
       home: FlowchartPage(bottomBar: _buildBottomBar),
       routes: <String, WidgetBuilder>{

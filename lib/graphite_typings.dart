@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/widgets.dart';
 import 'package:graphite/core/typings.dart';
 
@@ -74,9 +76,8 @@ typedef GestureNodePanUpdateCallback = void Function(
 typedef GestureNodePanDownCallback = void Function(
     DragDownDetails details, MatrixNode node, Rect rect);
 
-typedef GestureBackgroundTapCallback = void Function(
-    TapDownDetails details);
-typedef EdgePaintBuilder = Paint Function(Edge edge);
+typedef GestureBackgroundTapCallback = void Function(TapDownDetails details);
+typedef EdgeStyleBuilder = EdgeStyle Function(Edge edge);
 typedef GestureEdgeTapDownCallback = void Function(
     TapDownDetails details, Edge edge);
 typedef GestureEdgeTapUpCallback = void Function(
@@ -104,4 +105,61 @@ typedef GestureEdgeDragDownCallback = void Function(
     DragDownDetails details, Edge edge);
 
 typedef EdgePathBuilder = Path Function(NodeInput income, NodeInput node,
-    List<List<double>> points, EdgeArrowType arrowType);
+    List<List<double>> points, EdgeStyle style);
+
+enum LineStyle { solid, dashed, dotted, dashDotted }
+
+class EdgeStyle {
+  /// [LineStyle] of edges to draw.
+  final LineStyle lineStyle;
+
+  /// [Paint] of edges to use in drawing.
+  final Paint linePaint;
+
+  /// border radius of edges angles.
+  final double borderRadius;
+
+  /// length of dash in [LineStyle.dashed]
+  /// and [LineStyle.dashDotted] styles. Ignored if
+  /// style is [LineStyle.solid] or [LineStyle.dotted].
+  final double dashLength;
+
+  /// length of a gap in [LineStyle.dotted], [LineStyle.dashed]
+  /// and [LineStyle.dashDotted] styles. Ignored if
+  /// style is [LineStyle.solid].
+  final double gapLength;
+
+  /// diameter of dot in [LineStyle.dotted]
+  /// and [LineStyle.dashDotted] styles. Ignored if
+  /// style is [LineStyle.solid] or [LineStyle.dashed].
+  final double dotLength;
+
+  /// the type of arrows on the edge.
+  final EdgeArrowType arrowType;
+
+  /// is the length (in pixels) of each of the 2 lines making the arrow.
+  /// Ignored if using custom [pathBuilder] is set.
+  final double tipLength;
+
+  /// [tipAngle] is the angle (in radians) between each of the 2 lines making the arrow and the curve at this point.
+  /// Ignored if using custom [pathBuilder] is set.
+  final double tipAngle;
+
+  EdgeStyle({
+    Paint? linePaint,
+    this.lineStyle = LineStyle.solid,
+    this.borderRadius = 0,
+    this.dashLength = 10,
+    this.gapLength = 5,
+    this.dotLength = 2,
+    this.arrowType = EdgeArrowType.one,
+    this.tipAngle = pi * 0.1,
+    this.tipLength = 10.0,
+  }) : this.linePaint = linePaint ??
+            (Paint()
+              ..color = Color(0xFF000000)
+              ..style = PaintingStyle.stroke
+              ..strokeCap = StrokeCap.round
+              ..strokeJoin = StrokeJoin.round
+              ..strokeWidth = 2);
+}

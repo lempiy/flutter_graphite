@@ -64,18 +64,20 @@ class LabelsPageState extends State<LabelsPage> {
                                 child: Text(
                                     style: Theme.of(context)
                                         .textTheme
-                                        .bodyText2!
+                                        .bodyMedium!
                                         .copyWith(
                                             backgroundColor: Theme.of(context)
-                                                .backgroundColor),
+                                                .colorScheme
+                                                .surface),
                                     "${edge.from.id}=>${edge.to.id}"))
                             : Text(
                                 style: Theme.of(context)
                                     .textTheme
-                                    .bodyText2!
+                                    .bodyMedium!
                                     .copyWith(
-                                        backgroundColor:
-                                            Theme.of(context).backgroundColor),
+                                        backgroundColor: Theme.of(context)
+                                            .colorScheme
+                                            .surface),
                                 "${edge.from.id}=>${edge.to.id}"),
                       )),
               centered: _isCentered,

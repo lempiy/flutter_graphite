@@ -10,8 +10,6 @@ class GraphiteRoot extends StatefulWidget {
   final EdgeInsets cellPadding;
   final double contactEdgesDistance;
   final MatrixOrientation orientation;
-  final double tipLength;
-  final double tipAngle;
   final double maxScale;
   final double minScale;
   final Clip clipBehavior;
@@ -48,7 +46,7 @@ class GraphiteRoot extends StatefulWidget {
   final GestureNodeTapUpCallback? onNodeSecondaryTapUp;
 
   // Edge
-  final EdgePaintBuilder? paintBuilder;
+  final EdgeStyleBuilder? styleBuilder;
   final EdgePathBuilder? pathBuilder;
 
   final GestureBackgroundTapCallback? onCanvasTap;
@@ -74,8 +72,6 @@ class GraphiteRoot extends StatefulWidget {
     required this.mtx,
     required this.defaultCellSize,
     required this.cellPadding,
-    required this.tipLength,
-    required this.tipAngle,
     required this.maxScale,
     required this.minScale,
     required this.orientation,
@@ -95,7 +91,7 @@ class GraphiteRoot extends StatefulWidget {
     this.onEdgeForcePressUpdate,
     this.onEdgeSecondaryTapDown,
     this.onEdgeSecondaryTapUp,
-    this.paintBuilder,
+    this.styleBuilder,
     this.onNodeTapDown,
     this.onNodeTapUp,
     this.onNodeLongPressStart,
@@ -129,7 +125,7 @@ class _GraphiteRootState extends State<GraphiteRoot> {
         cellPadding: widget.cellPadding,
         contactEdgesDistance: widget.contactEdgesDistance,
         orientation: widget.orientation,
-        paintBuilder: widget.paintBuilder,
+        styleBuilder: widget.styleBuilder,
         onCanvasTap: widget.onCanvasTap,
         onEdgeTapDown: widget.onEdgeTapDown,
         onEdgeTapUp: widget.onEdgeTapUp,
@@ -142,8 +138,6 @@ class _GraphiteRootState extends State<GraphiteRoot> {
         onEdgeForcePressUpdate: widget.onEdgeForcePressUpdate,
         onEdgeSecondaryTapDown: widget.onEdgeSecondaryTapDown,
         onEdgeSecondaryTapUp: widget.onEdgeSecondaryTapUp,
-        tipAngle: widget.tipAngle,
-        tipLength: widget.tipLength,
         maxScale: widget.maxScale,
         minScale: widget.minScale,
         pathBuilder: widget.pathBuilder,
