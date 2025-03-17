@@ -7,7 +7,7 @@ import 'package:graphite/graphite_typings.dart';
 import 'package:touchable/touchable.dart';
 
 EdgeStyle _defaultStyleBuilder(Edge edge) {
-  return EdgeStyle();
+  return EdgeStyle(arrowType: edge.arrowType);
 }
 
 class LinesPainter extends CustomPainter {
