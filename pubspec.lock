@@ -5,10 +5,10 @@ packages:
     dependency: "direct main"
     description:
       name: arrow_path
-      sha256: "07194a2f165242543e81b7fb16d86d433b52ee31adb0dc9afe9273c0a45e2d9e"
+      sha256: "794651f27eca2e9b4749d307b1e7fb8254fb8343124cc24ee6497f3ceff94651"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.0"
+    version: "3.1.0"
   async:
     dependency: transitive
     description:
