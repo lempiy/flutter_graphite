@@ -186,11 +186,16 @@ Path _defaultEdgePathBuilder(
   if (style.arrowType == EdgeArrowType.none) {
     return styledPath;
   }
-  return ArrowPath.make(
-      path: styledPath,
-      isDoubleSided: style.arrowType == EdgeArrowType.both,
-      tipLength: style.tipLength,
-      tipAngle: style.tipAngle);
+
+  var arrowPath = ArrowPath.addTip(styledPath,
+      tipLength: style.tipLength, tipAngle: style.tipAngle);
+
+  if (style.arrowType == EdgeArrowType.both) {
+    arrowPath = ArrowPath.addTip(arrowPath,
+        tipLength: style.tipLength, tipAngle: style.tipAngle, isBackward: true);
+  }
+
+  return arrowPath;
 }
 
 List<Offset> _smoothCorners(List<Offset> points, double radius) {
